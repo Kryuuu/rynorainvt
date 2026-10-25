@@ -4,7 +4,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { createClient } from '@/lib/supabase/client';
 import { UserProfile, Workspace } from '@/types';
-import { dataStore, STATIC_USER, STATIC_WORKSPACE } from '@/lib/data-store';
+import { dataStore, MOCK_USERS, MOCK_WORKSPACES } from '@/lib/data-store';
 
 interface AuthContextType {
   user: User | null;
@@ -27,7 +27,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [currentWorkspace, setCurrentWorkspace] = useState<Workspace | null>(STATIC_WORKSPACE);
+  const [currentWorkspace, setCurrentWorkspace] = useState<Workspace | null>(MOCK_WORKSPACES.ws_personal);
   const [isLoading, setIsLoading] = useState(true);
 
   // Initialize session and listen for auth state changes
@@ -207,15 +207,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };
-      mockWs = {
-        id: 'ws_vendor_01',
-        name: 'Lentera Studio Official',
-        slug: 'lentera-studio',
-        type: 'vendor',
-        owner_id: 'user_vendor_01',
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      };
+      mockWs = MOCK_WORKSPACES.ws_vendor;
     } else if (type === 'admin') {
       mockProfile = {
         id: 'user_admin_01',
@@ -226,10 +218,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };
-      mockWs = STATIC_WORKSPACE;
+      mockWs = MOCK_WORKSPACES.ws_personal;
     } else {
-      mockProfile = STATIC_USER;
-      mockWs = STATIC_WORKSPACE;
+      mockProfile = MOCK_USERS.user_andi;
+      mockWs = MOCK_WORKSPACES.ws_personal;
     }
 
     setProfile(mockProfile);
