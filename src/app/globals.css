@@ -1,26 +1,80 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #FCFBF7;
+    --foreground: #1F2421;
+    --card: #FFFFFF;
+    --card-foreground: #1F2421;
+    --popover: #FFFFFF;
+    --popover-foreground: #1F2421;
+    --primary: #1F2421;
+    --primary-foreground: #FCFBF7;
+    --secondary: #F3EFE6;
+    --secondary-foreground: #1F2421;
+    --muted: #F0ECE4;
+    --muted-foreground: #636965;
+    --accent: #E8DFD8;
+    --accent-foreground: #1F2421;
+    --gold: #C5A880;
+    --gold-hover: #B5966B;
+    --gold-light: #F6F1EA;
+    --destructive: #DF3838;
+    --destructive-foreground: #FFFFFF;
+    --border: #E8E3DA;
+    --input: #E8E3DA;
+    --ring: #C5A880;
+    --radius: 0.625rem;
   }
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Plus Jakarta Sans", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  overflow-x: hidden;
+}
+
+.font-serif-luxury {
+  font-family: "Playfair Display", "Cormorant Garamond", Georgia, Cambria, "Times New Roman", Times, serif;
+}
+
+/* Elegant gold gradient text utility */
+.gold-gradient-text {
+  background: linear-gradient(135deg, #A88656 0%, #D8BE9A 50%, #9E7948 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gold-gradient-bg {
+  background: linear-gradient(135deg, #C5A880 0%, #D8C3A5 100%);
+}
+
+/* Subtle luxury card styling */
+.luxury-card {
+  background: #FFFFFF;
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 20px -2px rgba(31, 36, 33, 0.04);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.luxury-card:hover {
+  box-shadow: 0 10px 30px -4px rgba(31, 36, 33, 0.08);
+  border-color: #D8D2C5;
+}
+
+/* Clean custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #D8D2C5;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #C5A880;
 }
