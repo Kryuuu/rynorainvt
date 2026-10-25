@@ -26,7 +26,7 @@ function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialTab = searchParams.get('tab') === 'register' ? 'register' : 'login';
-  const redirectUrl = searchParams.get('redirect') || '/dashboard';
+  const redirectUrl = searchParams.get('redirectTo') || searchParams.get('redirect') || '/dashboard';
 
   const { signInWithEmail, signUpWithEmail, signInWithOtp, signInWithGoogle, signInAsDemo } = useAuth();
 

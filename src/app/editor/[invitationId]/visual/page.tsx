@@ -38,13 +38,15 @@ import {
   Image as ImageIcon,
   CheckCircle,
   Crown,
-  Share2
+  Share2,
+  Lock
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { dataStore, INITIAL_INVITATIONS } from '@/lib/data-store';
 import { InvitationSectionConfig, ThemeConfiguration, EventData } from '@/types';
 import { formatDateWITA } from '@/lib/utils';
+import { useAuth } from '@/lib/auth-context';
 
 // Audio Presets
 const AUDIO_PRESETS = [
@@ -58,6 +60,52 @@ const AUDIO_PRESETS = [
 function AdvancedVisualEditorContent() {
   const params = useParams();
   const invitationId = (params?.invitationId as string) || 'inv_andi_siti';
+  const { user, profile, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-[#181A18] flex flex-col items-center justify-center p-6 text-center text-white">
+        <div className="w-10 h-10 rounded-2xl bg-[#2D312E] text-[#C5A880] flex items-center justify-center mb-3 animate-spin">
+          <Sparkles className="w-5 h-5" />
+        </div>
+        <p className="text-xs font-semibold">Memuat kanvas visual editor...</p>
+      </div>
+    );
+  }
+
+  if (!user && !profile) {
+    return (
+      <div className="min-h-screen bg-[#181A18] flex flex-col items-center justify-center p-6 text-center text-white">
+        <div className="max-w-md w-full bg-[#1F2421] border border-white/10 rounded-3xl p-8 space-y-5 shadow-2xl">
+          <div className="w-14 h-14 rounded-2xl bg-[#2D312E] text-[#C5A880] flex items-center justify-center mx-auto">
+            <Lock className="w-6 h-6" />
+          </div>
+          <div className="space-y-1.5">
+            <h2 className="font-serif-luxury text-xl font-bold text-white">
+              Login Diperlukan
+            </h2>
+            <p className="text-xs text-stone-400">
+              Silakan masuk ke akun Rynora Anda untuk menggunakan visual canvas editor.
+            </p>
+          </div>
+          <div className="pt-2 space-y-2">
+            <Link
+              href={`/login?redirectTo=/editor/${invitationId}/visual`}
+              className="w-full inline-flex items-center justify-center py-2.5 px-4 rounded-xl bg-[#C5A880] text-[#181A18] text-xs font-bold hover:bg-[#D4AF37] transition-colors"
+            >
+              Masuk Sekarang
+            </Link>
+            <Link
+              href="/"
+              className="w-full inline-flex items-center justify-center py-2 px-4 text-xs text-stone-400 hover:text-white"
+            >
+              Kembali ke Beranda
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const initialInvitation = dataStore.getInvitationById(invitationId) || INITIAL_INVITATIONS[0];
 

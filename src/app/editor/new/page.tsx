@@ -30,13 +30,15 @@ import {
   X,
   Volume2,
   VolumeX,
-  FileAudio
+  FileAudio,
+  Lock
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { dataStore, INITIAL_TEMPLATES } from '@/lib/data-store';
 import { EventCategory, Invitation, ThemeConfiguration, EventData } from '@/types';
 import { slugify } from '@/lib/utils';
+import { useAuth } from '@/lib/auth-context';
 
 const AUDIO_PRESETS = [
   {
@@ -68,7 +70,53 @@ const AUDIO_PRESETS = [
 
 export default function SimpleEditorPage() {
   const router = useRouter();
+  const { user, profile, isLoading } = useAuth();
   const [currentStep, setCurrentStep] = useState(1);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-[#F8F7F3] flex flex-col items-center justify-center p-6 text-center">
+        <div className="w-10 h-10 rounded-2xl bg-[#1F2421] text-[#C5A880] flex items-center justify-center mb-3 animate-spin">
+          <Sparkles className="w-5 h-5" />
+        </div>
+        <p className="text-xs font-semibold text-[#1F2421]">Memuat editor undangan...</p>
+      </div>
+    );
+  }
+
+  if (!user && !profile) {
+    return (
+      <div className="min-h-screen bg-[#F8F7F3] flex flex-col items-center justify-center p-6 text-center">
+        <div className="max-w-md w-full bg-white border border-[#E8E3DA] rounded-3xl p-8 space-y-5 shadow-lg">
+          <div className="w-14 h-14 rounded-2xl bg-[#1F2421] text-[#C5A880] flex items-center justify-center mx-auto">
+            <Lock className="w-6 h-6" />
+          </div>
+          <div className="space-y-1.5">
+            <h2 className="font-serif-luxury text-xl font-bold text-[#1F2421]">
+              Login Diperlukan
+            </h2>
+            <p className="text-xs text-[#7A807C]">
+              Silakan masuk ke akun Rynora Anda untuk membuat undangan digital baru.
+            </p>
+          </div>
+          <div className="pt-2 space-y-2">
+            <Link
+              href="/login?redirectTo=/editor/new"
+              className="w-full inline-flex items-center justify-center py-2.5 px-4 rounded-xl bg-[#1F2421] text-white text-xs font-semibold hover:bg-[#2D312E] transition-colors"
+            >
+              Masuk Sekarang
+            </Link>
+            <Link
+              href="/"
+              className="w-full inline-flex items-center justify-center py-2 px-4 text-xs text-[#7A807C] hover:text-[#1F2421]"
+            >
+              Kembali ke Beranda
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // Form State
   const [category, setCategory] = useState<EventCategory>('wedding');

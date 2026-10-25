@@ -52,6 +52,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             updated_at: new Date().toISOString(),
           };
           setProfile(userProfile);
+          if (typeof document !== 'undefined') {
+            document.cookie = `rynora_auth_session=${encodeURIComponent(JSON.stringify({ 
+              id: data.session.user.id, 
+              email: data.session.user.email, 
+              role: data.session.user.email === 'ahmadshawity@gmail.com' ? 'admin' : 'user' 
+            }))}; path=/; max-age=604800; SameSite=Lax`;
+          }
           if (data.session.user.email) {
             dataStore.registerUser({
               id: data.session.user.id,
@@ -68,8 +75,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               const parsed = JSON.parse(savedDemo);
               setProfile(parsed.profile);
               setCurrentWorkspace(parsed.workspace);
+              if (typeof document !== 'undefined') {
+                document.cookie = `rynora_auth_session=${encodeURIComponent(JSON.stringify({ 
+                  id: parsed.profile.id, 
+                  email: parsed.profile.email, 
+                  role: parsed.profile.is_platform_admin ? 'admin' : (parsed.workspace?.type || 'personal') 
+                }))}; path=/; max-age=604800; SameSite=Lax`;
+              }
             } catch (e) {
               console.error('Failed to parse saved demo user', e);
+            }
+          } else {
+            // Not authenticated: clear cookie
+            if (typeof document !== 'undefined') {
+              document.cookie = 'rynora_auth_session=; path=/; max-age=0';
             }
           }
         }
@@ -102,6 +121,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             updated_at: new Date().toISOString(),
           };
           setProfile(userProfile);
+          if (typeof document !== 'undefined') {
+            document.cookie = `rynora_auth_session=${encodeURIComponent(JSON.stringify({ 
+              id: newSession.user.id, 
+              email: newSession.user.email, 
+              role: newSession.user.email === 'ahmadshawity@gmail.com' ? 'admin' : 'user' 
+            }))}; path=/; max-age=604800; SameSite=Lax`;
+          }
           if (newSession.user.email) {
             dataStore.registerUser({
               id: newSession.user.id,
@@ -109,6 +135,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               email: newSession.user.email,
               phone: newSession.user.phone,
             });
+          }
+        } else {
+          // Cleared session
+          if (!localStorage.getItem('rynora_demo_user')) {
+            if (typeof document !== 'undefined') {
+              document.cookie = 'rynora_auth_session=; path=/; max-age=0';
+            }
           }
         }
       }
@@ -239,7 +272,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       mockWs = MOCK_WORKSPACES.ws_vendor;
     } else if (type === 'admin') {
       mockProfile = {
-        id: 'user_admin_01',
+        id: '53860f2b-2808-43d2-9d53-066d504e4a20',
         full_name: 'Ahmad Shawity (Super Admin)',
         email: 'ahmadshawity@gmail.com',
         avatar_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200',
@@ -257,6 +290,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setProfile(mockProfile);
     setCurrentWorkspace(mockWs);
     localStorage.setItem('rynora_demo_user', JSON.stringify({ profile: mockProfile, workspace: mockWs }));
+    if (typeof document !== 'undefined') {
+      document.cookie = `rynora_auth_session=${encodeURIComponent(JSON.stringify({ 
+        id: mockProfile.id, 
+        email: mockProfile.email, 
+        role: mockProfile.is_platform_admin ? 'admin' : type 
+      }))}; path=/; max-age=604800; SameSite=Lax`;
+    }
   };
 
   // Sign Out
@@ -267,6 +307,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.warn('Supabase signOut error:', e);
     }
     localStorage.removeItem('rynora_demo_user');
+    if (typeof document !== 'undefined') {
+      document.cookie = 'rynora_auth_session=; path=/; max-age=0; SameSite=Lax';
+    }
     setUser(null);
     setSession(null);
     setProfile(null);

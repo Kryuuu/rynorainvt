@@ -65,7 +65,7 @@ export const MOCK_USERS: Record<string, UserProfile> = {
     updated_at: '2026-10-22T00:00:00.000Z',
   },
   user_admin: {
-    id: 'user_admin_01',
+    id: '53860f2b-2808-43d2-9d53-066d504e4a20',
     full_name: 'Ahmad Shawity',
     email: 'ahmadshawity@gmail.com',
     phone: '081112223334',
@@ -130,7 +130,7 @@ export const MOCK_WORKSPACES: Record<string, Workspace> = {
     name: 'Rynora Platform HQ',
     slug: 'rynora-admin',
     type: 'vendor',
-    owner_id: 'user_admin_01',
+    owner_id: '53860f2b-2808-43d2-9d53-066d504e4a20',
     settings: {
       brand_name: 'Rynora Admin HQ',
       brand_color: '#1F2421',
