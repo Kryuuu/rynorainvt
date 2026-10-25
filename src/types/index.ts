@@ -23,7 +23,7 @@ export type SubscriptionStatus = 'active' | 'past_due' | 'canceled' | 'incomplet
 
 export type PaymentProvider = 'midtrans' | 'xendit' | 'sandbox';
 
-export type PaymentStatus = 'pending' | 'settlement' | 'capture' | 'deny' | 'cancel' | 'expire' | 'refund';
+export type PaymentStatus = 'pending' | 'settlement' | 'capture' | 'deny' | 'cancel' | 'expire' | 'refund' | 'failed';
 
 // Plan Entitlements Structure
 export interface PlanEntitlements {
@@ -86,8 +86,10 @@ export interface WorkspaceMember {
 export interface UserProfile {
   id: string;
   full_name: string;
+  email?: string | null;
   avatar_url?: string | null;
   phone?: string | null;
+  status?: 'active' | 'suspended';
   is_platform_admin?: boolean;
   created_at: string;
   updated_at: string;
@@ -111,7 +113,13 @@ export interface Subscription {
 
 export interface PaymentTransaction {
   id: string;
+  order_id?: string;
   workspace_id: string;
+  user_id?: string;
+  user_name?: string;
+  user_email?: string;
+  plan_id?: string;
+  plan_name?: string;
   subscription_id?: string | null;
   provider: PaymentProvider;
   provider_transaction_id: string;
@@ -120,6 +128,7 @@ export interface PaymentTransaction {
   status: PaymentStatus;
   idempotency_key: string;
   payment_method?: string;
+  failure_reason?: string | null;
   paid_at?: string | null;
   created_at: string;
 }

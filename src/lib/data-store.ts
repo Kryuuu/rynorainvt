@@ -23,27 +23,55 @@ export const MOCK_USERS: Record<string, UserProfile> = {
   user_personal: {
     id: 'user_personal_01',
     full_name: 'Andi Pratama',
+    email: 'andi.pratama@gmail.com',
     phone: '081234567890',
     avatar_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150',
     is_platform_admin: false,
+    status: 'active',
     created_at: STATIC_TIMESTAMP,
     updated_at: STATIC_TIMESTAMP,
   },
   user_vendor: {
     id: 'user_vendor_01',
     full_name: 'Budi Santoso (Studio Kreasi)',
+    email: 'budi@lenterastudio.id',
     phone: '081987654321',
     avatar_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150',
     is_platform_admin: false,
+    status: 'active',
     created_at: STATIC_TIMESTAMP,
     updated_at: STATIC_TIMESTAMP,
   },
+  user_creator: {
+    id: 'user_creator_01',
+    full_name: 'Citra Lestari',
+    email: 'citra.lestari@gmail.com',
+    phone: '082155667788',
+    avatar_url: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150',
+    is_platform_admin: false,
+    status: 'active',
+    created_at: '2026-10-18T00:00:00.000Z',
+    updated_at: '2026-10-18T00:00:00.000Z',
+  },
+  user_free: {
+    id: 'user_free_01',
+    full_name: 'Dian Permatasari',
+    email: 'dian.permatasari@gmail.com',
+    phone: '085233441122',
+    avatar_url: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150',
+    is_platform_admin: false,
+    status: 'active',
+    created_at: '2026-10-22T00:00:00.000Z',
+    updated_at: '2026-10-22T00:00:00.000Z',
+  },
   user_admin: {
     id: 'user_admin_01',
-    full_name: 'Rynora Admin',
+    full_name: 'Ahmad Shawity',
+    email: 'ahmadshawity@gmail.com',
     phone: '081112223334',
     avatar_url: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150',
     is_platform_admin: true,
+    status: 'active',
     created_at: STATIC_TIMESTAMP,
     updated_at: STATIC_TIMESTAMP,
   },
@@ -73,6 +101,40 @@ export const MOCK_WORKSPACES: Record<string, Workspace> = {
       brand_color: '#C5A880',
       contact_phone: '081233445566',
       contact_email: 'halo@lenterastudio.id',
+    },
+    created_at: STATIC_TIMESTAMP,
+    updated_at: STATIC_TIMESTAMP,
+  },
+  ws_creator: {
+    id: 'ws_creator_01',
+    name: 'Citra Creative Invitations',
+    slug: 'citra-creative',
+    type: 'personal',
+    owner_id: 'user_creator_01',
+    settings: {},
+    created_at: '2026-10-18T00:00:00.000Z',
+    updated_at: '2026-10-18T00:00:00.000Z',
+  },
+  ws_free: {
+    id: 'ws_free_01',
+    name: 'Dian & Dimas Engagement',
+    slug: 'dian-dimas',
+    type: 'personal',
+    owner_id: 'user_free_01',
+    settings: {},
+    created_at: '2026-10-22T00:00:00.000Z',
+    updated_at: '2026-10-22T00:00:00.000Z',
+  },
+  ws_admin: {
+    id: 'ws_admin_01',
+    name: 'Rynora Platform HQ',
+    slug: 'rynora-admin',
+    type: 'vendor',
+    owner_id: 'user_admin_01',
+    settings: {
+      brand_name: 'Rynora Admin HQ',
+      brand_color: '#1F2421',
+      contact_email: 'ahmadshawity@gmail.com',
     },
     created_at: STATIC_TIMESTAMP,
     updated_at: STATIC_TIMESTAMP,
@@ -109,7 +171,210 @@ export const MOCK_SUBSCRIPTIONS: Record<string, Subscription> = {
     created_at: STATIC_TIMESTAMP,
     updated_at: STATIC_TIMESTAMP,
   },
+  sub_creator: {
+    id: 'sub_creator_01',
+    workspace_id: 'ws_creator_01',
+    plan_id: 'plan_creator_pro_annual',
+    plan: INITIAL_PLANS.find(p => p.id === 'plan_creator_pro_annual'),
+    status: 'active',
+    billing_period: 'annual',
+    provider: 'midtrans',
+    current_period_start: '2026-10-18T00:00:00.000Z',
+    current_period_end: '2027-10-18T00:00:00.000Z',
+    cancel_at_period_end: false,
+    created_at: '2026-10-18T00:00:00.000Z',
+    updated_at: '2026-10-18T00:00:00.000Z',
+  },
+  sub_free: {
+    id: 'sub_free_01',
+    workspace_id: 'ws_free_01',
+    plan_id: 'plan_free',
+    plan: INITIAL_PLANS.find(p => p.id === 'plan_free'),
+    status: 'active',
+    billing_period: 'monthly',
+    provider: 'sandbox',
+    current_period_start: '2026-10-22T00:00:00.000Z',
+    current_period_end: '2027-10-22T00:00:00.000Z',
+    cancel_at_period_end: false,
+    created_at: '2026-10-22T00:00:00.000Z',
+    updated_at: '2026-10-22T00:00:00.000Z',
+  },
+  sub_admin: {
+    id: 'sub_admin_01',
+    workspace_id: 'ws_admin_01',
+    plan_id: 'plan_vendor_studio_annual',
+    plan: INITIAL_PLANS.find(p => p.id === 'plan_vendor_studio_annual'),
+    status: 'active',
+    billing_period: 'annual',
+    provider: 'sandbox',
+    current_period_start: '2026-10-01T00:00:00.000Z',
+    current_period_end: '2099-12-31T23:59:59.000Z',
+    cancel_at_period_end: false,
+    created_at: STATIC_TIMESTAMP,
+    updated_at: STATIC_TIMESTAMP,
+  },
 };
+
+// Comprehensive Initial Payment Transactions (Berhasil, Gagal, Batal, Pending)
+export const INITIAL_TRANSACTIONS: PaymentTransaction[] = [
+  {
+    id: 'TRX-20261025-001',
+    order_id: 'ORD-RYN-98214',
+    workspace_id: 'ws_vendor_01',
+    user_id: 'user_vendor_01',
+    user_name: 'Budi Santoso (Studio Kreasi)',
+    user_email: 'budi@lenterastudio.id',
+    plan_id: 'plan_vendor_studio_annual',
+    plan_name: 'Vendor Studio (Tahunan)',
+    provider: 'midtrans',
+    provider_transaction_id: 'mid_snap_99182371',
+    amount: 1990000,
+    currency: 'IDR',
+    status: 'settlement',
+    idempotency_key: 'idemp_txn_001',
+    payment_method: 'BCA Virtual Account',
+    paid_at: '2026-10-25T14:32:00.000Z',
+    created_at: '2026-10-25T14:28:10.000Z',
+  },
+  {
+    id: 'TRX-20261024-002',
+    order_id: 'ORD-RYN-88123',
+    workspace_id: 'ws_personal_01',
+    user_id: 'user_personal_01',
+    user_name: 'Andi Pratama',
+    user_email: 'andi.pratama@gmail.com',
+    plan_id: 'plan_personal_plus_monthly',
+    plan_name: 'Personal Plus (Bulanan)',
+    provider: 'midtrans',
+    provider_transaction_id: 'mid_snap_88192344',
+    amount: 39000,
+    currency: 'IDR',
+    status: 'settlement',
+    idempotency_key: 'idemp_txn_002',
+    payment_method: 'QRIS (GoPay/ShopeePay)',
+    paid_at: '2026-10-24T10:15:22.000Z',
+    created_at: '2026-10-24T10:14:00.000Z',
+  },
+  {
+    id: 'TRX-20261023-003',
+    order_id: 'ORD-RYN-77401',
+    workspace_id: 'ws_creator_01',
+    user_id: 'user_creator_01',
+    user_name: 'Citra Lestari',
+    user_email: 'citra.lestari@gmail.com',
+    plan_id: 'plan_creator_pro_annual',
+    plan_name: 'Creator Pro (Tahunan)',
+    provider: 'midtrans',
+    provider_transaction_id: 'mid_snap_77192311',
+    amount: 599000,
+    currency: 'IDR',
+    status: 'capture',
+    idempotency_key: 'idemp_txn_003',
+    payment_method: 'Kartu Kredit (Visa Platinum)',
+    paid_at: '2026-10-23T16:45:00.000Z',
+    created_at: '2026-10-23T16:42:30.000Z',
+  },
+  {
+    id: 'TRX-20261024-004',
+    order_id: 'ORD-RYN-81920',
+    workspace_id: 'ws_hendra_01',
+    user_id: 'user_hendra_01',
+    user_name: 'Hendra Wijaya',
+    user_email: 'hendra.wijaya@outlook.com',
+    plan_id: 'plan_creator_pro_monthly',
+    plan_name: 'Creator Pro (Bulanan)',
+    provider: 'midtrans',
+    provider_transaction_id: 'mid_snap_81920033',
+    amount: 79000,
+    currency: 'IDR',
+    status: 'expire',
+    failure_reason: 'Batas waktu pembayaran (24 jam) via Virtual Account Mandiri telah habis tanpa penerimaan dana.',
+    idempotency_key: 'idemp_txn_004',
+    payment_method: 'Mandiri Bill Payment',
+    paid_at: null,
+    created_at: '2026-10-23T09:00:00.000Z',
+  },
+  {
+    id: 'TRX-20261022-005',
+    order_id: 'ORD-RYN-65129',
+    workspace_id: 'ws_maya_01',
+    user_id: 'user_maya_01',
+    user_name: 'Maya Kartika',
+    user_email: 'maya.kartika@gmail.com',
+    plan_id: 'plan_personal_plus_annual',
+    plan_name: 'Personal Plus (Tahunan)',
+    provider: 'midtrans',
+    provider_transaction_id: 'mid_snap_65129944',
+    amount: 299000,
+    currency: 'IDR',
+    status: 'deny',
+    failure_reason: 'Transaksi ditolak oleh Bank Penerbit Kartu Kredit (Insufficient balance / Security Risk Check).',
+    idempotency_key: 'idemp_txn_005',
+    payment_method: 'Kartu Kredit (Mastercard)',
+    paid_at: null,
+    created_at: '2026-10-22T21:10:00.000Z',
+  },
+  {
+    id: 'TRX-20261025-006',
+    order_id: 'ORD-RYN-90112',
+    workspace_id: 'ws_rizky_01',
+    user_id: 'user_rizky_01',
+    user_name: 'Rizky Ramadhan',
+    user_email: 'rizky.ramadhan@gmail.com',
+    plan_id: 'plan_personal_plus_monthly',
+    plan_name: 'Personal Plus (Bulanan)',
+    provider: 'midtrans',
+    provider_transaction_id: 'mid_snap_90112455',
+    amount: 39000,
+    currency: 'IDR',
+    status: 'cancel',
+    failure_reason: 'Transaksi dibatalkan secara sadar oleh pengguna pada halaman pembayaran checkout Midtrans.',
+    idempotency_key: 'idemp_txn_006',
+    payment_method: 'BNI Virtual Account',
+    paid_at: null,
+    created_at: '2026-10-25T11:20:00.000Z',
+  },
+  {
+    id: 'TRX-20261021-007',
+    order_id: 'ORD-RYN-51203',
+    workspace_id: 'ws_wahyu_01',
+    user_id: 'user_wahyu_01',
+    user_name: 'Wahyu Hidayat',
+    user_email: 'wahyu.hidayat@yahoo.com',
+    plan_id: 'plan_creator_pro_annual',
+    plan_name: 'Creator Pro (Tahunan)',
+    provider: 'midtrans',
+    provider_transaction_id: 'mid_snap_51203876',
+    amount: 599000,
+    currency: 'IDR',
+    status: 'cancel',
+    failure_reason: 'Pembeli membatalkan pesanan untuk berganti paket ke Vendor Studio.',
+    idempotency_key: 'idemp_txn_007',
+    payment_method: 'QRIS',
+    paid_at: null,
+    created_at: '2026-10-21T18:40:00.000Z',
+  },
+  {
+    id: 'TRX-20261026-008',
+    order_id: 'ORD-RYN-99881',
+    workspace_id: 'ws_free_01',
+    user_id: 'user_free_01',
+    user_name: 'Dian Permatasari',
+    user_email: 'dian.permatasari@gmail.com',
+    plan_id: 'plan_personal_plus_monthly',
+    plan_name: 'Personal Plus (Bulanan)',
+    provider: 'sandbox',
+    provider_transaction_id: 'snd_box_9988123',
+    amount: 39000,
+    currency: 'IDR',
+    status: 'pending',
+    failure_reason: null,
+    idempotency_key: 'idemp_txn_008',
+    payment_method: 'Transfer Bank Manual (BCA)',
+    paid_at: null,
+    created_at: '2026-10-26T00:30:00.000Z',
+  },
+];
 
 // 5 Rich Initial Templates
 export const INITIAL_TEMPLATES: Template[] = [
@@ -667,6 +932,7 @@ class MemoryStore {
   vendorClients = [...INITIAL_VENDOR_CLIENTS];
   publishCredits = [...INITIAL_PUBLISH_CREDITS];
   auditLogs = [...INITIAL_AUDIT_LOGS];
+  transactions = [...INITIAL_TRANSACTIONS];
 
   // Invitations
   getInvitationBySlug(slug: string) {
@@ -868,6 +1134,250 @@ class MemoryStore {
     guest.checked_in_at = null;
     guest.checked_in_by = null;
     return { success: true, guest };
+  }
+
+  // User Management & Subscriptions
+  getAllUsers() {
+    return Object.values(this.users).map(user => {
+      const ws = Object.values(this.workspaces).find(w => w.owner_id === user.id) || null;
+      const sub = ws ? Object.values(this.subscriptions).find(s => s.workspace_id === ws.id) : null;
+      const plan = sub?.plan || (sub ? INITIAL_PLANS.find(p => p.id === sub.plan_id) : INITIAL_PLANS.find(p => p.id === 'plan_free')) || INITIAL_PLANS[0];
+      return {
+        ...user,
+        workspace: ws,
+        subscription: sub,
+        plan,
+      };
+    });
+  }
+
+  registerUser(userData: { id?: string; full_name: string; email: string; phone?: string; role?: string }) {
+    const userId = userData.id || `user_${Date.now()}`;
+    const now = new Date().toISOString();
+    
+    // Check if user already exists
+    const existing = Object.values(this.users).find(u => u.email === userData.email || u.id === userId);
+    if (existing) {
+      return existing;
+    }
+
+    const newUser: UserProfile = {
+      id: userId,
+      full_name: userData.full_name,
+      email: userData.email,
+      phone: userData.phone || null,
+      avatar_url: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(userData.full_name)}`,
+      is_platform_admin: userData.email === 'ahmadshawity@gmail.com',
+      status: 'active',
+      created_at: now,
+      updated_at: now,
+    };
+
+    this.users[userId] = newUser;
+
+    // Create default workspace
+    const wsId = `ws_${Date.now()}`;
+    const newWs: Workspace = {
+      id: wsId,
+      name: `${userData.full_name}'s Workspace`,
+      slug: userData.full_name.toLowerCase().replace(/[^a-z0-9]/g, '-') + `-${Date.now().toString(36)}`,
+      type: userData.role === 'vendor' ? 'vendor' : 'personal',
+      owner_id: userId,
+      settings: {},
+      created_at: now,
+      updated_at: now,
+    };
+    this.workspaces[wsId] = newWs;
+
+    // Create initial subscription
+    const subId = `sub_${Date.now()}`;
+    const freePlan = INITIAL_PLANS.find(p => p.id === 'plan_free') || INITIAL_PLANS[0];
+    this.subscriptions[subId] = {
+      id: subId,
+      workspace_id: wsId,
+      plan_id: freePlan.id,
+      plan: freePlan,
+      status: 'active',
+      billing_period: 'monthly',
+      provider: 'sandbox',
+      current_period_start: now,
+      current_period_end: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
+      cancel_at_period_end: false,
+      created_at: now,
+      updated_at: now,
+    };
+
+    return newUser;
+  }
+
+  updateUserSubscription(
+    userId: string, 
+    newPlanId: string, 
+    newStatus: any = 'active', 
+    durationMonths: number = 1, 
+    notes?: string,
+    actorId: string = 'user_admin_01'
+  ) {
+    const user = Object.values(this.users).find(u => u.id === userId);
+    if (!user) {
+      throw new Error('Pengguna tidak ditemukan');
+    }
+
+    let ws = Object.values(this.workspaces).find(w => w.owner_id === userId);
+    const now = new Date();
+
+    if (!ws) {
+      const wsId = `ws_${Date.now()}`;
+      ws = {
+        id: wsId,
+        name: `${user.full_name} Workspace`,
+        slug: user.full_name.toLowerCase().replace(/[^a-z0-9]/g, '-') + `-${Date.now().toString(36)}`,
+        type: 'personal',
+        owner_id: userId,
+        settings: {},
+        created_at: now.toISOString(),
+        updated_at: now.toISOString(),
+      };
+      this.workspaces[wsId] = ws;
+    }
+
+    const targetPlan = INITIAL_PLANS.find(p => p.id === newPlanId);
+    if (!targetPlan) {
+      throw new Error(`Paket dengan ID '${newPlanId}' tidak valid`);
+    }
+
+    // Find or create subscription
+    let sub = Object.values(this.subscriptions).find(s => s.workspace_id === ws!.id);
+    const oldPlanId = sub?.plan_id || 'plan_free';
+
+    // Calculate end date
+    let periodEnd: Date;
+    if (durationMonths >= 999) {
+      periodEnd = new Date('2099-12-31T23:59:59.000Z'); // Lifetime
+    } else {
+      periodEnd = new Date(now.getTime() + durationMonths * 30 * 24 * 60 * 60 * 1000);
+    }
+
+    if (sub) {
+      sub.plan_id = targetPlan.id;
+      sub.plan = targetPlan;
+      sub.status = newStatus;
+      sub.current_period_start = now.toISOString();
+      sub.current_period_end = periodEnd.toISOString();
+      sub.updated_at = now.toISOString();
+    } else {
+      const subId = `sub_${Date.now()}`;
+      sub = {
+        id: subId,
+        workspace_id: ws.id,
+        plan_id: targetPlan.id,
+        plan: targetPlan,
+        status: newStatus,
+        billing_period: targetPlan.billing_period,
+        provider: 'sandbox',
+        current_period_start: now.toISOString(),
+        current_period_end: periodEnd.toISOString(),
+        cancel_at_period_end: false,
+        created_at: now.toISOString(),
+        updated_at: now.toISOString(),
+      };
+      this.subscriptions[subId] = sub;
+    }
+
+    // Record in Audit Log
+    const auditEntry: AuditLog = {
+      id: `log_${Date.now()}`,
+      actor_id: actorId,
+      workspace_id: ws.id,
+      action: 'SUBSCRIPTION_MANUAL_OVERRIDE',
+      target_type: 'subscription',
+      target_id: sub.id,
+      metadata: {
+        user_id: user.id,
+        user_name: user.full_name,
+        user_email: user.email,
+        old_plan: oldPlanId,
+        new_plan: targetPlan.id,
+        new_plan_name: targetPlan.name,
+        status: newStatus,
+        duration_months: durationMonths,
+        notes: notes || 'Admin manual subscription override',
+        applied_at: now.toISOString(),
+      },
+      created_at: now.toISOString(),
+    };
+    this.auditLogs.unshift(auditEntry);
+
+    return {
+      success: true,
+      user,
+      subscription: sub,
+      plan: targetPlan,
+      auditLog: auditEntry,
+    };
+  }
+
+  // Transactions Management
+  getAllTransactions() {
+    return [...this.transactions];
+  }
+
+  updateTransactionStatus(
+    transactionId: string, 
+    newStatus: any, 
+    reason?: string, 
+    actorId: string = 'user_admin_01'
+  ) {
+    const txn = this.transactions.find(t => t.id === transactionId || t.order_id === transactionId);
+    if (!txn) {
+      throw new Error(`Transaksi '${transactionId}' tidak ditemukan.`);
+    }
+
+    const oldStatus = txn.status;
+    txn.status = newStatus;
+    const now = new Date().toISOString();
+
+    if (newStatus === 'settlement' || newStatus === 'capture') {
+      txn.paid_at = now;
+    }
+    if (reason) {
+      txn.failure_reason = reason;
+    }
+
+    // Audit log
+    const auditEntry: AuditLog = {
+      id: `log_${Date.now()}`,
+      actor_id: actorId,
+      workspace_id: txn.workspace_id,
+      action: 'TRANSACTION_STATUS_UPDATED',
+      target_type: 'payment_transaction',
+      target_id: txn.id,
+      metadata: {
+        order_id: txn.order_id,
+        old_status: oldStatus,
+        new_status: newStatus,
+        amount: txn.amount,
+        customer_email: txn.user_email,
+        reason: reason || 'Manual status change by administrator',
+        updated_at: now,
+      },
+      created_at: now,
+    };
+    this.auditLogs.unshift(auditEntry);
+
+    // If transaction changed to settlement and user has workspace, activate their subscription
+    if (newStatus === 'settlement' && txn.plan_id && txn.workspace_id) {
+      const sub = Object.values(this.subscriptions).find(s => s.workspace_id === txn.workspace_id);
+      const plan = INITIAL_PLANS.find(p => p.id === txn.plan_id);
+      if (sub && plan) {
+        sub.plan_id = plan.id;
+        sub.plan = plan;
+        sub.status = 'active';
+        sub.updated_at = now;
+      }
+    }
+
+    return { success: true, transaction: txn, auditLog: auditEntry };
   }
 }
 

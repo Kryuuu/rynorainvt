@@ -40,15 +40,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (mounted && data.session) {
           setSession(data.session);
           setUser(data.session.user);
-          setProfile({
+          const userProfile: UserProfile = {
             id: data.session.user.id,
             full_name: data.session.user.user_metadata?.full_name || data.session.user.email?.split('@')[0] || 'Pengguna Rynora',
+            email: data.session.user.email,
             avatar_url: data.session.user.user_metadata?.avatar_url || null,
             phone: data.session.user.phone || null,
             is_platform_admin: data.session.user.email === 'ahmadshawity@gmail.com',
+            status: 'active',
             created_at: data.session.user.created_at,
             updated_at: new Date().toISOString(),
-          });
+          };
+          setProfile(userProfile);
+          if (data.session.user.email) {
+            dataStore.registerUser({
+              id: data.session.user.id,
+              full_name: userProfile.full_name,
+              email: data.session.user.email,
+              phone: data.session.user.phone,
+            });
+          }
         } else if (mounted) {
           // Check if local demo login exists
           const savedDemo = localStorage.getItem('rynora_demo_user');
@@ -79,15 +90,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         if (newSession?.user) {
           localStorage.removeItem('rynora_demo_user');
-          setProfile({
+          const userProfile: UserProfile = {
             id: newSession.user.id,
             full_name: newSession.user.user_metadata?.full_name || newSession.user.email?.split('@')[0] || 'Pengguna Rynora',
+            email: newSession.user.email,
             avatar_url: newSession.user.user_metadata?.avatar_url || null,
             phone: newSession.user.phone || null,
             is_platform_admin: newSession.user.email === 'ahmadshawity@gmail.com',
+            status: 'active',
             created_at: newSession.user.created_at,
             updated_at: new Date().toISOString(),
-          });
+          };
+          setProfile(userProfile);
+          if (newSession.user.email) {
+            dataStore.registerUser({
+              id: newSession.user.id,
+              full_name: userProfile.full_name,
+              email: newSession.user.email,
+              phone: newSession.user.phone,
+            });
+          }
         }
       }
     );
@@ -143,6 +165,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (data.user) {
         setUser(data.user);
         setSession(data.session);
+        dataStore.registerUser({
+          id: data.user.id,
+          full_name: fullName,
+          email: email,
+          role: role,
+        });
         return { success: true };
       }
 
@@ -201,6 +229,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       mockProfile = {
         id: 'user_vendor_01',
         full_name: 'Lentera Wedding Studio',
+        email: 'budi@lenterastudio.id',
         avatar_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200',
         phone: '081233445566',
         is_platform_admin: false,
@@ -212,15 +241,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       mockProfile = {
         id: 'user_admin_01',
         full_name: 'Ahmad Shawity (Super Admin)',
+        email: 'ahmadshawity@gmail.com',
         avatar_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200',
         phone: '081199887766',
         is_platform_admin: true,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };
-      mockWs = MOCK_WORKSPACES.ws_personal;
+      mockWs = MOCK_WORKSPACES.ws_admin;
     } else {
-      mockProfile = MOCK_USERS.user_andi;
+      mockProfile = MOCK_USERS.user_personal;
       mockWs = MOCK_WORKSPACES.ws_personal;
     }
 
