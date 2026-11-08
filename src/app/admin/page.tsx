@@ -402,17 +402,20 @@ export default function AdminPortalPage() {
   return (
     <div className="min-h-screen bg-[#F8F7F3] flex flex-col font-sans">
       {/* Admin Header Bar */}
-      <header className="h-16 bg-[#181A18] text-white px-6 flex items-center justify-between border-b border-white/10 sticky top-0 z-40 shadow-sm">
+      <header className="h-16 bg-[#181A18] text-white px-4 sm:px-6 flex items-center justify-between gap-3 border-b border-white/10 sticky top-0 z-40 shadow-sm">
         <div className="flex items-center gap-4">
           <Link href="/dashboard" className="flex items-center gap-1.5 text-xs text-[#C5A880] hover:text-white transition-colors">
             <ArrowLeft className="w-4 h-4" />
-            <span>Kembali ke App</span>
+            <span className="hidden sm:inline">Kembali ke App</span>
           </Link>
-          <div className="h-4 w-[1px] bg-white/20" />
-          <div className="flex items-center gap-2">
-            <ShieldAlert className="w-5 h-5 text-[#C5A880]" />
-            <span className="font-serif-luxury font-bold text-sm tracking-wide">
+          <div className="h-4 w-[1px] bg-white/20 hidden sm:block" />
+          <div className="flex items-center gap-2 min-w-0">
+            <ShieldAlert className="w-5 h-5 text-[#C5A880] shrink-0" />
+            <span className="font-serif-luxury font-bold text-sm tracking-wide truncate hidden md:inline">
               Rynora Control Center (Admin)
+            </span>
+            <span className="font-serif-luxury font-bold text-sm tracking-wide truncate md:hidden">
+              Admin
             </span>
           </div>
         </div>
@@ -422,7 +425,7 @@ export default function AdminPortalPage() {
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
             <span>Sistem Operasional Normal</span>
           </div>
-          <Badge variant="gold" className="text-[10px] tracking-wider uppercase font-semibold">Super Administrator</Badge>
+          <Badge variant="gold" className="text-[10px] tracking-wider uppercase font-semibold hidden sm:inline-flex">Super Administrator</Badge>
           <Button
             variant="ghost"
             size="sm"
@@ -441,7 +444,7 @@ export default function AdminPortalPage() {
 
       {/* Floating Alert Notification */}
       {notification && (
-        <div className={`fixed top-20 right-6 z-50 max-w-md p-4 rounded-xl shadow-xl border flex items-start gap-3 transition-all ${
+        <div className={`fixed top-20 inset-x-4 sm:inset-x-auto sm:right-6 z-50 sm:max-w-md p-4 rounded-xl shadow-xl border flex items-start gap-3 transition-all ${
           notification.type === 'success' 
             ? 'bg-emerald-950 text-emerald-100 border-emerald-700' 
             : notification.type === 'error'
@@ -499,7 +502,7 @@ export default function AdminPortalPage() {
       </div>
 
       {/* Main Admin Area */}
-      <main className="flex-1 max-w-7xl w-full mx-auto p-6 sm:p-8 space-y-6">
+      <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
         
         {/* ==================================================================== */}
         {/* TAB 1: OVERVIEW */}
@@ -686,10 +689,10 @@ export default function AdminPortalPage() {
 
               {/* Users Table */}
               <div className="overflow-x-auto rounded-xl border border-[#E8E3DA]">
-                <table className="w-full text-left text-xs">
+                <table className="w-full min-w-[960px] text-left text-xs">
                   <thead className="bg-[#FAF8F5] text-[10px] font-bold uppercase tracking-wider text-[#7A807C] border-b border-[#E8E3DA]">
                     <tr>
-                      <th className="py-3 px-4">Pengguna</th>
+                      <th className="py-3 px-4 whitespace-nowrap">Pengguna</th>
                       <th className="py-3 px-4">Kontak & Email</th>
                       <th className="py-3 px-4">Tipe Akun</th>
                       <th className="py-3 px-4">Workspace</th>
@@ -1046,10 +1049,10 @@ export default function AdminPortalPage() {
 
               {/* Transactions Table */}
               <div className="overflow-x-auto rounded-xl border border-[#E8E3DA]">
-                <table className="w-full text-left text-xs">
+                <table className="w-full min-w-[900px] text-left text-xs">
                   <thead className="bg-[#FAF8F5] text-[10px] font-bold uppercase tracking-wider text-[#7A807C] border-b border-[#E8E3DA]">
                     <tr>
-                      <th className="py-3 px-4">Order ID & Waktu</th>
+                      <th className="py-3 px-4 whitespace-nowrap">Order ID & Waktu</th>
                       <th className="py-3 px-4">Pelanggan</th>
                       <th className="py-3 px-4">Paket Rynora</th>
                       <th className="py-3 px-4">Nominal</th>

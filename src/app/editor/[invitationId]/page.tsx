@@ -161,28 +161,29 @@ function EditExistingInvitationContent() {
 
   return (
     <div className="min-h-screen bg-[#F8F7F3] flex flex-col">
-      <header className="h-16 bg-[#1F2421] text-[#FCFBF7] px-6 flex items-center justify-between border-b border-[#E8E3DA]">
-        <div className="flex items-center gap-4">
-          <Link href="/dashboard" className="flex items-center gap-1.5 text-xs text-[#C5A880] hover:text-white">
+      <header className="h-16 bg-[#1F2421] text-[#FCFBF7] px-4 sm:px-6 flex items-center justify-between gap-3 border-b border-[#E8E3DA]">
+        <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+          <Link href="/dashboard" className="flex items-center gap-1.5 text-xs text-[#C5A880] hover:text-white shrink-0">
             <ArrowLeft className="w-4 h-4" />
-            <span>Kembali ke Dashboard</span>
+            <span className="hidden sm:inline">Kembali ke Dashboard</span>
+            <span className="sm:hidden">Kembali</span>
           </Link>
-          <div className="h-4 w-[1px] bg-white/20" />
-          <span className="font-serif-luxury font-bold text-sm">
+          <div className="h-4 w-[1px] bg-white/20 hidden md:block" />
+          <span className="font-serif-luxury font-bold text-sm truncate hidden md:inline">
             Edit Undangan: {invitation.title}
           </span>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 shrink-0">
           <Link href={`/editor/${invitation.id}/visual`}>
             <Button variant="outline" size="sm" className="text-xs bg-transparent text-white border-white/20 hover:bg-white/10">
-              <Layers className="w-3.5 h-3.5 mr-1 text-[#C5A880]" />
-              Buka Visual Editor
+              <Layers className="w-3.5 h-3.5 text-[#C5A880] sm:mr-1" />
+              <span className="hidden sm:inline">Buka Visual Editor</span>
             </Button>
           </Link>
           <Button variant="gold" size="sm" onClick={handleSave} className="text-xs">
-            <Save className="w-3.5 h-3.5 mr-1" />
-            {isSaved ? 'Tersimpan!' : 'Simpan Perubahan'}
+            <Save className="w-3.5 h-3.5 sm:mr-1" />
+            <span className="hidden sm:inline">{isSaved ? 'Tersimpan!' : 'Simpan Perubahan'}</span>
           </Button>
         </div>
       </header>

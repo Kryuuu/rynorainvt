@@ -345,14 +345,15 @@ export default function SimpleEditorPage() {
   return (
     <div className="min-h-screen bg-[#F8F7F3] flex flex-col">
       {/* Top Wizard Navigation */}
-      <header className="h-16 bg-[#1F2421] text-[#FCFBF7] px-4 sm:px-8 flex items-center justify-between border-b border-[#E8E3DA]">
-        <div className="flex items-center gap-4">
-          <Link href="/dashboard" className="flex items-center gap-1.5 text-xs text-[#C5A880] hover:text-white">
+      <header className="h-16 bg-[#1F2421] text-[#FCFBF7] px-4 sm:px-8 flex items-center justify-between gap-3 border-b border-[#E8E3DA]">
+        <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+          <Link href="/dashboard" className="flex items-center gap-1.5 text-xs text-[#C5A880] hover:text-white shrink-0">
             <ArrowLeft className="w-4 h-4" />
-            <span>Batal & Kembali</span>
+            <span className="hidden sm:inline">Batal & Kembali</span>
+            <span className="sm:hidden">Batal</span>
           </Link>
-          <div className="h-4 w-[1px] bg-white/20" />
-          <span className="font-serif-luxury font-bold text-sm">
+          <div className="h-4 w-[1px] bg-white/20 hidden sm:block" />
+          <span className="font-serif-luxury font-bold text-sm truncate hidden sm:inline">
             Simple Guided Editor
           </span>
         </div>
@@ -1162,7 +1163,7 @@ export default function SimpleEditorPage() {
             {/* Render Preview Frame */}
             <div className="flex justify-center p-4 bg-[#F3EFE6] rounded-2xl">
               <div className={`bg-white rounded-2xl overflow-hidden shadow-lg border border-[#E8E3DA] ${
-                previewDevice === 'mobile' ? 'w-[360px] h-[580px]' : 'w-full max-w-2xl h-[580px]'
+                previewDevice === 'mobile' ? 'w-full max-w-[360px] h-[580px]' : 'w-full max-w-2xl h-[580px]'
               } overflow-y-auto p-6 text-center space-y-6 scrollbar-thin`}>
                 
                 {/* Floating Music Indicator */}
@@ -1261,9 +1262,9 @@ export default function SimpleEditorPage() {
               </div>
             </div>
 
-            <div className="flex justify-between pt-4 border-t border-[#E8E3DA]">
-              <Button variant="outline" onClick={() => setCurrentStep(6)}>Kembali</Button>
-              <Button variant="gold" onClick={handlePublish} isLoading={isPublishing}>
+            <div className="flex flex-col-reverse sm:flex-row sm:justify-between gap-3 pt-4 border-t border-[#E8E3DA]">
+              <Button variant="outline" onClick={() => setCurrentStep(6)} className="w-full sm:w-auto">Kembali</Button>
+              <Button variant="gold" onClick={handlePublish} isLoading={isPublishing} className="w-full sm:w-auto">
                 <Sparkles className="w-4 h-4 mr-1.5" />
                 Terbitkan Undangan Sekarang
               </Button>

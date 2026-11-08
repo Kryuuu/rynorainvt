@@ -78,7 +78,7 @@ export default function HomePage() {
                 </div>
 
                 {/* Micro social proof */}
-                <div className="pt-6 border-t border-[#E8E3DA] grid grid-cols-3 gap-6 max-w-md mx-auto lg:mx-0">
+                <div className="pt-6 border-t border-[#E8E3DA] grid grid-cols-3 gap-3 sm:gap-6 max-w-md mx-auto lg:mx-0">
                   <div>
                     <p className="font-serif-luxury text-2xl font-bold text-[#1F2421]">5.000+</p>
                     <p className="text-xs text-[#7A807C]">Undangan Diterbitkan</p>
@@ -96,7 +96,7 @@ export default function HomePage() {
 
               {/* Right Live Interactive Phone Mockup Preview */}
               <div className="lg:col-span-5 flex justify-center">
-                <div className="relative w-[320px] sm:w-[350px] rounded-[40px] border-[8px] border-[#222523] bg-[#FCFBF7] shadow-2xl overflow-hidden">
+                <div className="relative w-full max-w-[320px] sm:w-[350px] sm:max-w-none rounded-[40px] border-[8px] border-[#222523] bg-[#FCFBF7] shadow-2xl overflow-hidden">
                   {/* Speaker notch */}
                   <div className="absolute top-2 left-1/2 -translate-x-1/2 w-28 h-4 bg-[#222523] rounded-b-xl z-20" />
 

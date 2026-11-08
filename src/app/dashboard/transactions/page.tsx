@@ -40,11 +40,11 @@ export default function TransactionsHistoryPage() {
           </p>
         </div>
 
-        <div className="rounded-2xl border border-[#E8E3DA] bg-white shadow-sm overflow-hidden">
-          <table className="w-full text-left text-xs text-[#4E5450]">
+        <div className="rounded-2xl border border-[#E8E3DA] bg-white shadow-sm overflow-hidden overflow-x-auto">
+          <table className="w-full min-w-[720px] text-left text-xs text-[#4E5450]">
             <thead className="bg-[#FAF8F5] text-[10px] font-bold uppercase tracking-wider text-[#7A807C] border-b border-[#E8E3DA]">
               <tr>
-                <th className="py-3.5 px-6">No. Order Transaksi</th>
+                <th className="py-3.5 px-4 sm:px-6 whitespace-nowrap">No. Order Transaksi</th>
                 <th className="py-3.5 px-6">Item / Paket</th>
                 <th className="py-3.5 px-6">Metode</th>
                 <th className="py-3.5 px-6">Nominal</th>
@@ -55,7 +55,7 @@ export default function TransactionsHistoryPage() {
             <tbody className="divide-y divide-[#E8E3DA]">
               {transactions.map((t) => (
                 <tr key={t.id} className="hover:bg-[#FCFBF7]">
-                  <td className="py-4 px-6 font-mono font-bold text-[#1F2421]">{t.orderId}</td>
+                  <td className="py-4 px-4 sm:px-6 font-mono font-bold text-[#1F2421] whitespace-nowrap">{t.orderId}</td>
                   <td className="py-4 px-6 font-medium text-[#1F2421]">{t.planName}</td>
                   <td className="py-4 px-6">{t.provider}</td>
                   <td className="py-4 px-6 font-semibold text-[#1F2421]">{formatIDR(t.amount)}</td>
