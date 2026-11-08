@@ -347,39 +347,39 @@ function CheckinScannerContent() {
   );
 
   return (
-    <div className="min-h-screen bg-[#1F2421] text-[#FCFBF7] flex flex-col font-sans selection:bg-[#C5A880] selection:text-[#1F2421]">
+    <div className="min-h-screen bg-[#1F2421] text-[#FCFBF7] flex flex-col font-sans overflow-x-clip selection:bg-[#C5A880] selection:text-[#1F2421]">
       
       {/* Top Header Bar */}
-      <header className="bg-[#171B19] border-b border-[#2E3531] px-4 py-3 sticky top-0 z-30 shadow-md">
-        <div className="max-w-6xl mx-auto flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
+      <header className="bg-[#171B19] border-b border-[#2E3531] px-3 sm:px-4 py-3 sticky top-0 z-30 shadow-md">
+        <div className="max-w-6xl mx-auto flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
             <Link 
               href="/dashboard/guests"
-              className="w-8 h-8 rounded-full bg-[#272E2B] flex items-center justify-center text-gray-300 hover:text-white hover:bg-[#333C38] transition-all"
+              className="w-8 h-8 shrink-0 rounded-full bg-[#272E2B] flex items-center justify-center text-gray-300 hover:text-white hover:bg-[#333C38] transition-all"
               title="Kembali ke Dashboard"
             >
               <ArrowLeft className="w-4 h-4" />
             </Link>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] uppercase font-bold tracking-widest text-[#C5A880]">
+            <div className="min-w-0">
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <span className="text-[10px] uppercase font-bold tracking-widest text-[#C5A880] whitespace-nowrap">
                   Buku Tamu & Scanner QR
                 </span>
-                <Badge variant="outline" className="text-[9px] bg-[#272E2B] border-[#C5A880]/30 text-[#C5A880]">
+                <Badge variant="outline" className="text-[9px] bg-[#272E2B] border-[#C5A880]/30 text-[#C5A880] whitespace-nowrap shrink-0">
                   WITA Zone
                 </Badge>
               </div>
-              <h1 className="font-serif-luxury text-base sm:text-lg font-bold text-white truncate max-w-xs sm:max-w-md">
+              <h1 className="font-serif-luxury text-base sm:text-lg font-bold text-white truncate">
                 {invitation ? invitation.title : 'Meja Penerima Tamu'}
               </h1>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             {/* Audio Toggle */}
             <button
               onClick={() => setSoundEnabled(!soundEnabled)}
-              className="p-2 rounded-xl bg-[#272E2B] text-gray-300 hover:text-[#C5A880] transition-colors"
+              className="p-2 shrink-0 rounded-xl bg-[#272E2B] text-gray-300 hover:text-[#C5A880] transition-colors"
               title={soundEnabled ? 'Suara Aktif' : 'Suara Mati'}
             >
               {soundEnabled ? <Volume2 className="w-4 h-4 text-[#C5A880]" /> : <VolumeX className="w-4 h-4 text-gray-500" />}
@@ -399,7 +399,7 @@ function CheckinScannerContent() {
             <Link
               href={`/i/${slug}`}
               target="_blank"
-              className="text-xs px-2.5 py-1.5 rounded-xl bg-[#272E2B] text-gray-300 hover:text-white flex items-center gap-1 border border-[#38423E]"
+              className="shrink-0 text-xs px-2 sm:px-2.5 py-1.5 rounded-xl bg-[#272E2B] text-gray-300 hover:text-white flex items-center gap-1 border border-[#38423E]"
             >
               <span className="hidden sm:inline">Lihat Undangan</span>
               <ExternalLink className="w-3 h-3 text-[#C5A880]" />
@@ -409,26 +409,26 @@ function CheckinScannerContent() {
       </header>
 
       {/* Main Container */}
-      <main className="flex-1 max-w-6xl w-full mx-auto p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <main className="flex-1 max-w-6xl w-full mx-auto p-3 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 min-w-0">
         
         {/* ==================================================================== */}
         {/* LEFT COLUMN: SCANNER VIEWFINDER & LIVE RESULT (Cols 1-7) */}
         {/* ==================================================================== */}
-        <div className="lg:col-span-7 space-y-5 flex flex-col">
+        <div className="lg:col-span-7 space-y-5 flex flex-col min-w-0">
           
           {/* Real-time Attendance Stats Strip */}
-          <div className="grid grid-cols-3 gap-3 p-4 rounded-2xl bg-[#171B19] border border-[#2E3531]">
-            <div className="space-y-0.5">
-              <span className="text-[10px] uppercase tracking-wider text-gray-400 font-medium">Hadir</span>
+          <div className="grid grid-cols-3 gap-2 sm:gap-3 p-3 sm:p-4 rounded-2xl bg-[#171B19] border border-[#2E3531]">
+            <div className="space-y-0.5 min-w-0">
+              <span className="text-[10px] uppercase tracking-wider text-gray-400 font-medium truncate block">Hadir</span>
               <div className="flex items-baseline gap-1.5">
                 <span className="text-xl sm:text-2xl font-bold text-emerald-400">{checkedInCount}</span>
-                <span className="text-xs text-gray-400">/ {totalGuests}</span>
+                <span className="text-xs text-gray-400 whitespace-nowrap">/ {totalGuests}</span>
               </div>
-              <p className="text-[10px] text-gray-400 font-mono">{totalPaxCheckedIn} Pax Total</p>
+              <p className="text-[10px] text-gray-400 font-mono truncate">{totalPaxCheckedIn} Pax Total</p>
             </div>
 
-            <div className="space-y-0.5 border-x border-[#2E3531] px-3">
-              <span className="text-[10px] uppercase tracking-wider text-gray-400 font-medium">Belum Hadir</span>
+            <div className="space-y-0.5 border-x border-[#2E3531] px-2 sm:px-3 min-w-0">
+              <span className="text-[10px] uppercase tracking-wider text-gray-400 font-medium truncate block">Belum Hadir</span>
               <div className="flex items-baseline gap-1">
                 <span className="text-xl sm:text-2xl font-bold text-amber-400">{remainingCount}</span>
                 <span className="text-xs text-gray-400">Tamu</span>
@@ -436,8 +436,8 @@ function CheckinScannerContent() {
               <p className="text-[10px] text-gray-400">Menunggu</p>
             </div>
 
-            <div className="space-y-0.5 text-right">
-              <span className="text-[10px] uppercase tracking-wider text-gray-400 font-medium">Persentase</span>
+            <div className="space-y-0.5 text-right min-w-0">
+              <span className="text-[10px] uppercase tracking-wider text-gray-400 font-medium truncate block">Persentase</span>
               <div className="text-xl sm:text-2xl font-bold text-[#C5A880]">{attendanceRate}%</div>
               <div className="w-full h-1.5 rounded-full bg-[#272E2B] overflow-hidden mt-1">
                 <div 
@@ -449,7 +449,7 @@ function CheckinScannerContent() {
           </div>
 
           {/* Camera Scanner Viewport */}
-          <div className="relative rounded-3xl overflow-hidden bg-black border-2 border-[#2E3531] aspect-video sm:aspect-[4/3] flex flex-col items-center justify-center shadow-2xl">
+          <div className="relative rounded-3xl overflow-hidden bg-black border-2 border-[#2E3531] aspect-[4/3] flex flex-col items-center justify-center shadow-2xl">
             
             {/* Hidden canvas for image decoding */}
             <canvas ref={canvasRef} className="hidden" />
@@ -464,10 +464,10 @@ function CheckinScannerContent() {
 
             {/* Scanning Overlay (When Camera is active) */}
             {isCameraActive && (
-              <div className="absolute inset-0 pointer-events-none flex flex-col items-center justify-center p-6">
+              <div className="absolute inset-0 pointer-events-none flex flex-col items-center justify-center p-4 pb-16 sm:p-6 sm:pb-16">
                 
                 {/* Viewfinder Target Box */}
-                <div className="relative w-56 h-56 sm:w-64 sm:h-64 border-2 border-[#C5A880]/60 rounded-3xl overflow-hidden shadow-[0_0_0_9999px_rgba(0,0,0,0.5)]">
+                <div className="relative w-40 h-40 sm:w-64 sm:h-64 shrink-0 border-2 border-[#C5A880]/60 rounded-3xl overflow-hidden shadow-[0_0_0_9999px_rgba(0,0,0,0.5)]">
                   {/* Target Corners */}
                   <div className="absolute top-0 left-0 w-6 h-6 border-t-4 border-l-4 border-[#C5A880] rounded-tl-xl" />
                   <div className="absolute top-0 right-0 w-6 h-6 border-t-4 border-r-4 border-[#C5A880] rounded-tr-xl" />
@@ -478,7 +478,7 @@ function CheckinScannerContent() {
                   <div className="absolute left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#C5A880] to-transparent shadow-[0_0_12px_#C5A880] animate-pulse top-1/2 -translate-y-1/2" />
                 </div>
 
-                <p className="mt-4 text-xs text-white/80 font-medium tracking-wide bg-black/60 px-4 py-1.5 rounded-full backdrop-blur-sm">
+                <p className="mt-3 text-[11px] sm:text-xs text-white/80 font-medium tracking-wide bg-black/60 px-3 sm:px-4 py-1.5 rounded-full backdrop-blur-sm text-center max-w-full">
                   Arahkan kamera ke QR Code tamu
                 </p>
               </div>
@@ -518,20 +518,20 @@ function CheckinScannerContent() {
 
             {/* Floating Camera Controls (When active) */}
             {isCameraActive && (
-              <div className="absolute bottom-4 inset-x-4 flex items-center justify-between z-20">
+              <div className="absolute bottom-3 sm:bottom-4 inset-x-3 sm:inset-x-4 flex items-center gap-2 z-20">
                 <button
                   onClick={() => setFacingMode(facingMode === 'environment' ? 'user' : 'environment')}
-                  className="px-3 py-1.5 rounded-xl bg-black/70 hover:bg-black/90 text-xs text-gray-200 border border-white/20 backdrop-blur-sm flex items-center gap-1.5 transition-all"
+                  className="flex-1 min-w-0 px-2 py-2 rounded-xl bg-black/70 hover:bg-black/90 text-[11px] sm:text-xs text-gray-200 border border-white/20 backdrop-blur-sm flex items-center justify-center gap-1.5 transition-all whitespace-nowrap"
                 >
-                  <RefreshCw className="w-3.5 h-3.5 text-[#C5A880]" />
+                  <RefreshCw className="w-3.5 h-3.5 shrink-0 text-[#C5A880]" />
                   <span>Putar Kamera</span>
                 </button>
 
                 <button
                   onClick={() => setIsCameraActive(false)}
-                  className="px-3 py-1.5 rounded-xl bg-red-950/80 hover:bg-red-900 text-xs text-red-200 border border-red-800/50 backdrop-blur-sm flex items-center gap-1.5 transition-all"
+                  className="flex-1 min-w-0 px-2 py-2 rounded-xl bg-red-950/80 hover:bg-red-900 text-[11px] sm:text-xs text-red-200 border border-red-800/50 backdrop-blur-sm flex items-center justify-center gap-1.5 transition-all whitespace-nowrap"
                 >
-                  <CameraOff className="w-3.5 h-3.5" />
+                  <CameraOff className="w-3.5 h-3.5 shrink-0" />
                   <span>Matikan Kamera</span>
                 </button>
               </div>
@@ -608,12 +608,12 @@ function CheckinScannerContent() {
               </div>
 
               {scanResult.guest && (
-                <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-xs">
-                  <span className="text-gray-400 text-[11px]">{scanResult.message}</span>
+                <div className="mt-4 pt-3 border-t border-white/10 flex flex-wrap items-center justify-between gap-2 text-xs">
+                  <span className="text-gray-400 text-[11px] min-w-0">{scanResult.message}</span>
                   {scanResult.guest.checked_in_at && (
                     <button
                       onClick={() => handleUndoCheckIn(scanResult.guest!.id)}
-                      className="text-[11px] underline text-gray-400 hover:text-white"
+                      className="text-[11px] underline text-gray-400 hover:text-white shrink-0 whitespace-nowrap"
                     >
                       Batalkan Check-in
                     </button>
@@ -634,15 +634,15 @@ function CheckinScannerContent() {
                   setManualToken('');
                 }
               }}
-              className="flex gap-2"
+              className="flex flex-col sm:flex-row gap-2"
             >
               <Input
                 placeholder="Tempel / ketik token QR tamu (cth: qr_syamsuddin_checkin)..."
                 value={manualToken}
                 onChange={(e) => setManualToken(e.target.value)}
-                className="bg-[#272E2B] border-[#38423E] text-white text-xs h-10"
+                className="bg-[#272E2B] border-[#38423E] text-white text-xs h-10 min-w-0"
               />
-              <Button type="submit" variant="gold" size="sm" className="h-10 text-xs px-4">
+              <Button type="submit" variant="gold" size="sm" className="h-10 w-full sm:w-auto shrink-0 text-xs px-4 whitespace-nowrap">
                 Check-in
               </Button>
             </form>
@@ -653,15 +653,15 @@ function CheckinScannerContent() {
         {/* ==================================================================== */}
         {/* RIGHT COLUMN: SEARCH GUEST & REAL-TIME GUESTBOOK (Cols 8-12) */}
         {/* ==================================================================== */}
-        <div className="lg:col-span-5 space-y-5 flex flex-col">
+        <div className="lg:col-span-5 space-y-5 flex flex-col min-w-0">
           
-          <div className="p-5 rounded-3xl bg-[#171B19] border border-[#2E3531] space-y-4 flex-1 flex flex-col">
-            <div className="flex items-center justify-between">
-              <div>
+          <div className="p-4 sm:p-5 rounded-3xl bg-[#171B19] border border-[#2E3531] space-y-4 flex-1 flex flex-col min-w-0">
+            <div className="flex items-start justify-between gap-2">
+              <div className="min-w-0">
                 <h3 className="font-serif-luxury text-lg font-bold text-white">Daftar Buku Tamu</h3>
                 <p className="text-[11px] text-gray-400">Pencarian & check-in manual tamu di tempat</p>
               </div>
-              <Badge variant="outline" className="text-[10px] text-[#C5A880] border-[#C5A880]/30">
+              <Badge variant="outline" className="text-[10px] text-[#C5A880] border-[#C5A880]/30 shrink-0 whitespace-nowrap">
                 {filteredGuests.length} Tamu
               </Badge>
             </div>
@@ -689,28 +689,28 @@ function CheckinScannerContent() {
                   return (
                     <div
                       key={guest.id}
-                      className={`p-3 rounded-2xl border transition-all flex items-center justify-between gap-3 ${
+                      className={`p-3 rounded-2xl border transition-all flex items-center justify-between gap-2 ${
                         isCheckedIn 
                           ? 'bg-[#1D2622] border-emerald-500/30' 
                           : 'bg-[#212724] border-[#2E3531] hover:border-[#38423E]'
                       }`}
                     >
-                      <div className="space-y-0.5 min-w-0">
-                        <div className="flex items-center gap-1.5">
-                          <span className="font-semibold text-xs text-white truncate">
+                      <div className="space-y-0.5 min-w-0 flex-1">
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <span className="font-semibold text-xs text-white truncate max-w-full">
                             {guest.name}
                           </span>
                           {guest.category && (
-                            <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#2D3632] text-[#C5A880] font-mono flex-shrink-0">
+                            <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#2D3632] text-[#C5A880] font-mono shrink-0 whitespace-nowrap">
                               {guest.category}
                             </span>
                           )}
                         </div>
-                        <div className="flex items-center gap-2 text-[10px] text-gray-400">
-                          <span>Maks. {guest.pax_limit} Pax</span>
+                        <div className="flex items-center gap-2 text-[10px] text-gray-400 flex-wrap">
+                          <span className="whitespace-nowrap">Maks. {guest.pax_limit} Pax</span>
                           {isCheckedIn && (
-                            <span className="text-emerald-400 flex items-center gap-1 font-mono">
-                              <CheckCircle2 className="w-3 h-3" />
+                            <span className="text-emerald-400 flex items-center gap-1 font-mono whitespace-nowrap">
+                              <CheckCircle2 className="w-3 h-3 shrink-0" />
                               Hadir ({new Date(guest.checked_in_at!).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })})
                             </span>
                           )}
@@ -721,7 +721,7 @@ function CheckinScannerContent() {
                       {isCheckedIn ? (
                         <button
                           onClick={() => handleUndoCheckIn(guest.id)}
-                          className="text-[10px] text-gray-400 hover:text-red-300 px-2 py-1 rounded bg-[#272E2B] border border-transparent hover:border-red-900/40"
+                          className="shrink-0 whitespace-nowrap text-[10px] text-gray-400 hover:text-red-300 px-2 py-1 rounded bg-[#272E2B] border border-transparent hover:border-red-900/40"
                           title="Batalkan check-in"
                         >
                           Batal
@@ -731,7 +731,7 @@ function CheckinScannerContent() {
                           variant="gold"
                           size="sm"
                           onClick={() => handleManualCheckIn(guest)}
-                          className="h-7 text-[10px] px-2.5 font-semibold"
+                          className="h-7 shrink-0 whitespace-nowrap text-[10px] px-2.5 font-semibold"
                         >
                           Check-in
                         </Button>
