@@ -25,6 +25,16 @@ export type PaymentProvider = 'midtrans' | 'xendit' | 'sandbox';
 
 export type PaymentStatus = 'pending' | 'settlement' | 'capture' | 'deny' | 'cancel' | 'expire' | 'refund' | 'failed';
 
+// Animasi masuk per seksi (fitur PRO: Creator Pro & Vendor Studio saja).
+// undefined / 'none' = perilaku lama (seksi tampil langsung tanpa animasi).
+export type SectionAnimation =
+  | 'none'
+  | 'fade'
+  | 'fade-up'
+  | 'slide-left'
+  | 'slide-right'
+  | 'zoom-in';
+
 // Plan Entitlements Structure
 export interface PlanEntitlements {
   max_draft_invitations: number;
@@ -37,6 +47,7 @@ export interface PlanEntitlements {
   can_use_custom_domain: boolean;
   can_use_qr_checkin: boolean;
   can_export_guest_data: boolean;
+  can_use_custom_animations: boolean; // true hanya untuk Creator Pro & Vendor Studio
   max_team_seats: number;
   monthly_publish_credits: number;
   has_analytics: boolean;
@@ -240,6 +251,8 @@ export interface InvitationSectionConfig {
   is_visible: boolean;
   custom_title?: string;
   custom_subtitle?: string;
+  // Animasi masuk saat seksi di-scroll ke layar (fitur PRO). undefined = 'none'.
+  animation?: SectionAnimation;
   settings?: Record<string, unknown>;
 }
 

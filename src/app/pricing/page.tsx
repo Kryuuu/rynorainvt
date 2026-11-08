@@ -106,6 +106,12 @@ export default function PricingPage() {
                       <Check className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0" />
                       <span>{plan.entitlements.can_use_visual_editor ? 'Simple & Visual Editor' : 'Simple Editor Saja'}</span>
                     </li>
+                    {plan.entitlements.can_use_custom_animations && (
+                      <li className="flex items-center gap-2">
+                        <Check className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0" />
+                        <span>Animasi custom per seksi</span>
+                      </li>
+                    )}
                     <li className="flex items-center gap-2">
                       <Check className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0" />
                       <span>{plan.entitlements.can_remove_branding ? 'Tanpa Watermark Rynora' : 'Dengan Watermark Rynora'}</span>

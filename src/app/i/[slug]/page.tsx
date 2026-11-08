@@ -31,6 +31,8 @@ import {
 import QRCode from 'qrcode';
 import { dataStore } from '@/lib/data-store';
 import { Guest } from '@/types';
+import { AnimatedSection } from '@/components/invitation/animated-section';
+import { resolveEffectiveSectionAnimation } from '@/lib/section-animations';
 import { formatDateWITA, formatTimeWITA } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -71,6 +73,16 @@ function PublicInvitationContent() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const invitation = dataStore.getInvitationBySlug(slug) || dataStore.getInvitationById('inv_andi_siti');
+
+  // Animasi masuk per seksi (fitur PRO): dibaca dari konfigurasi seksi
+  // undangan, tapi hanya dipakai jika workspace pemilik undangan berhak
+  // (Creator Pro ke atas). Entitlement tidak diketahui / paket Free /
+  // Personal Plus / nilai tidak dikenal -> 'none' (perilaku lama).
+  const sectionAnimation = (sectionKey: string) =>
+    resolveEffectiveSectionAnimation(
+      invitation?.sections?.find((s) => s.section_key === sectionKey)?.animation,
+      invitation ? dataStore.getEntitlementsForWorkspace(invitation.workspace_id) : null
+    );
 
   useEffect(() => {
     if (!invitation) return;
@@ -318,6 +330,7 @@ function PublicInvitationContent() {
       <div className="max-w-2xl mx-auto min-h-screen bg-white/60 shadow-xl border-x border-[#E8E3DA]">
         
         {/* HERO SECTION */}
+        <AnimatedSection animation={sectionAnimation('hero')}>
         <section className="relative min-h-[90vh] flex flex-col items-center justify-between p-6 sm:p-8 text-center border-b border-[#E8E3DA] overflow-hidden">
           <div className="absolute inset-0 z-0">
             <img
@@ -365,8 +378,10 @@ function PublicInvitationContent() {
             <ChevronDown className="w-6 h-6 mx-auto opacity-70" />
           </div>
         </section>
+        </AnimatedSection>
 
         {/* BRIDE & GROOM PROFILE */}
+        <AnimatedSection animation={sectionAnimation('couple')}>
         <section className="py-16 px-6 sm:px-12 text-center space-y-12 border-b border-[#E8E3DA]">
           <div className="space-y-3 max-w-lg mx-auto">
             <span className="text-xs uppercase tracking-widest font-bold text-[#9A7B4F]">
@@ -419,8 +434,10 @@ function PublicInvitationContent() {
             </div>
           </div>
         </section>
+        </AnimatedSection>
 
         {/* EVENT SESSIONS & LOCATION */}
+        <AnimatedSection animation={sectionAnimation('events')}>
         <section className="py-16 px-6 sm:px-12 bg-[#FAF8F5] border-b border-[#E8E3DA] space-y-10">
           <div className="text-center space-y-2">
             <span className="text-xs uppercase tracking-widest font-bold text-[#9A7B4F]">
@@ -482,9 +499,11 @@ function PublicInvitationContent() {
             ))}
           </div>
         </section>
+        </AnimatedSection>
 
         {/* PHOTO GALLERY */}
         {event_data.enable_gallery && event_data.gallery_images && event_data.gallery_images.length > 0 && (
+          <AnimatedSection animation={sectionAnimation('gallery')}>
           <section className="py-16 px-6 sm:px-12 border-b border-[#E8E3DA] space-y-8">
             <div className="text-center space-y-2">
               <span className="text-xs uppercase tracking-widest font-bold text-[#9A7B4F]">
@@ -510,10 +529,12 @@ function PublicInvitationContent() {
               ))}
             </div>
           </section>
+          </AnimatedSection>
         )}
 
         {/* PREWEDDING VIDEO SECTION (MP4 / YouTube) */}
         {event_data.enable_video && event_data.video_url && (
+          <AnimatedSection animation={sectionAnimation('video')}>
           <section className="py-16 px-6 sm:px-12 bg-[#FAF8F5] border-b border-[#E8E3DA] space-y-8">
             <div className="text-center space-y-2">
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#1F2421] text-[#C5A880] text-[11px] font-semibold mb-1">
@@ -555,10 +576,12 @@ function PublicInvitationContent() {
               )}
             </div>
           </section>
+          </AnimatedSection>
         )}
 
         {/* RSVP FORM SECTION */}
         {event_data.enable_rsvp && (
+          <AnimatedSection animation={sectionAnimation('rsvp')}>
           <section className="py-16 px-6 sm:px-12 bg-[#FAF8F5] border-b border-[#E8E3DA] space-y-8">
             <div className="text-center space-y-2">
               <span className="text-xs uppercase tracking-widest font-bold text-[#9A7B4F]">
@@ -674,6 +697,7 @@ function PublicInvitationContent() {
               )}
             </div>
           </section>
+          </AnimatedSection>
         )}
 
         {/* ==================================================================== */}
@@ -781,6 +805,7 @@ function PublicInvitationContent() {
 
         {/* GUEST BOOK / WISHES FEED */}
         {event_data.enable_wishes && (
+          <AnimatedSection animation={sectionAnimation('wishes')}>
           <section className="py-16 px-6 sm:px-12 border-b border-[#E8E3DA] space-y-8">
             <div className="text-center space-y-2">
               <span className="text-xs uppercase tracking-widest font-bold text-[#9A7B4F]">
@@ -812,10 +837,12 @@ function PublicInvitationContent() {
               ))}
             </div>
           </section>
+          </AnimatedSection>
         )}
 
         {/* DIGITAL GIFT / AMPLOP DIGITAL */}
         {event_data.enable_gift && event_data.digital_gifts && event_data.digital_gifts.length > 0 && (
+          <AnimatedSection animation={sectionAnimation('gifts')}>
           <section className="py-16 px-6 sm:px-12 bg-[#FAF8F5] border-b border-[#E8E3DA] space-y-8">
             <div className="text-center space-y-2">
               <span className="text-xs uppercase tracking-widest font-bold text-[#9A7B4F]">
@@ -869,9 +896,11 @@ function PublicInvitationContent() {
               ))}
             </div>
           </section>
+          </AnimatedSection>
         )}
 
         {/* CLOSING BLESSINGS & BRANDING */}
+        <AnimatedSection animation={sectionAnimation('closing')}>
         <footer className="py-16 px-6 text-center space-y-8">
           <div className="space-y-3 max-w-md mx-auto">
             <Heart className="w-6 h-6 text-[#C5A880] mx-auto animate-pulse" />
@@ -921,6 +950,7 @@ function PublicInvitationContent() {
             </a>
           </div>
         </footer>
+        </AnimatedSection>
 
       </div>
 

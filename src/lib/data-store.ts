@@ -947,6 +947,13 @@ class MemoryStore {
     return this.invitations.filter(i => i.workspace_id === workspaceId);
   }
 
+  // Entitlements per workspace (dipakai untuk gating fitur berbayar).
+  // Subscription tidak ditemukan / plan tidak ada -> default Free (aman).
+  getEntitlementsForWorkspace(workspaceId: string) {
+    const sub = Object.values(this.subscriptions).find(s => s.workspace_id === workspaceId);
+    return sub?.plan?.entitlements || DEFAULT_FREE_ENTITLEMENTS;
+  }
+
   saveInvitation(invitation: Invitation) {
     const idx = this.invitations.findIndex(i => i.id === invitation.id);
     const now = new Date().toISOString();

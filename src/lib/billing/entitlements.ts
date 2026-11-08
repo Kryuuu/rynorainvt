@@ -77,6 +77,17 @@ export function checkGuestCreationLimit(
 }
 
 /**
+ * Apakah workspace boleh memakai animasi custom per seksi (fitur PRO)?
+ * Hanya Creator Pro & Vendor Studio (can_use_custom_animations === true).
+ * Entitlement yang hilang / tidak valid = TIDAK boleh (default aman = Free).
+ */
+export function canUseCustomAnimations(
+  entitlements?: PlanEntitlements | null
+): boolean {
+  return entitlements?.can_use_custom_animations === true;
+}
+
+/**
  * Validate CSV import rows against remaining guest capacity
  */
 export function validateGuestBatchCapacity(
