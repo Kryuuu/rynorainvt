@@ -44,7 +44,9 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { dataStore, INITIAL_INVITATIONS } from '@/lib/data-store';
-import { InvitationSectionConfig, ThemeConfiguration, EventData } from '@/types';
+import { InvitationSectionConfig, ThemeConfiguration, EventData, SectionAnimation } from '@/types';
+import { SECTION_ANIMATION_OPTIONS } from '@/lib/section-animations';
+import { canUseCustomAnimations } from '@/lib/billing/entitlements';
 import { formatDateWITA } from '@/lib/utils';
 import { useAuth } from '@/lib/auth-context';
 
@@ -109,6 +111,12 @@ function AdvancedVisualEditorContent() {
 
   const initialInvitation = dataStore.getInvitationById(invitationId) || INITIAL_INVITATIONS[0];
 
+  // Gating fitur PRO: animasi custom per seksi hanya untuk Creator Pro ke atas.
+  // Workspace tanpa subscription / plan tidak dikenal -> default Free (tidak boleh).
+  const canUseAnimations = canUseCustomAnimations(
+    dataStore.getEntitlementsForWorkspace(initialInvitation.workspace_id)
+  );
+
   // Canvas Mode & Inspector Navigation
   const [deviceMode, setDeviceMode] = useState<'mobile' | 'tablet' | 'desktop'>('mobile');
   const [selectedSectionKey, setSelectedSectionKey] = useState<string>('hero');
@@ -144,7 +152,7 @@ function AdvancedVisualEditorContent() {
 
   const [theme, setTheme] = useState<ThemeConfiguration>(initialInvitation.theme_configuration);
 
-  const [sections, setSections] = useState<InvitationSectionConfig[]>([
+  const DEFAULT_SECTIONS: InvitationSectionConfig[] = [
     { id: 'sec_1', section_key: 'hero', component_type: 'HeroSection', sort_order: 1, is_visible: true, custom_title: 'Sampul & Hero' },
     { id: 'sec_2', section_key: 'couple', component_type: 'CoupleSection', sort_order: 2, is_visible: true, custom_title: 'Profil Mempelai' },
     { id: 'sec_3', section_key: 'video', component_type: 'VideoSection', sort_order: 3, is_visible: true, custom_title: 'Video Prewedding (MP4)' },
@@ -155,28 +163,55 @@ function AdvancedVisualEditorContent() {
     { id: 'sec_8', section_key: 'wishes', component_type: 'WishesSection', sort_order: 8, is_visible: true, custom_title: 'Buku Tamu & Ucapan' },
     { id: 'sec_9', section_key: 'gifts', component_type: 'GiftsSection', sort_order: 9, is_visible: true, custom_title: 'Amplop Digital / Hadiah' },
     { id: 'sec_10', section_key: 'closing', component_type: 'ClosingSection', sort_order: 10, is_visible: true, custom_title: 'Penutup & Salam' },
-  ]);
+  ];
+
+  // Pakai seksi yang sudah tersimpan (termasuk animasi yang pernah dipilih);
+  // kalau belum ada, pakai 10 seksi default. Tanpa ini, animasi yang sudah
+  // disimpan akan tertimpa default setiap kali editor dibuka.
+  const [sections, setSections] = useState<InvitationSectionConfig[]>(
+    initialInvitation.sections && initialInvitation.sections.length > 0
+      ? initialInvitation.sections
+      : DEFAULT_SECTIONS
+  );
 
   // Debounced Autosave Simulator
   useEffect(() => {
     setIsSaved(false);
     const timeout = setTimeout(() => {
+      // Pengaman gating: workspace non-Pro tidak boleh menyimpan animasi
+      // selain 'none' (misalnya paket diturunkan di tengah sesi edit).
+      const sectionsToSave = canUseAnimations
+        ? sections
+        : sections.map((s) =>
+            s.animation && s.animation !== 'none' ? { ...s, animation: 'none' as SectionAnimation } : s
+          );
       dataStore.saveInvitation({
         ...initialInvitation,
         event_data: eventData,
         theme_configuration: theme,
-        sections,
+        sections: sectionsToSave,
         updated_at: new Date().toISOString(),
       });
       setIsSaved(true);
     }, 1200);
 
     return () => clearTimeout(timeout);
-  }, [eventData, theme, sections]);
+  }, [eventData, theme, sections, canUseAnimations]);
 
   // Section Manipulation Handlers
   const handleToggleVisibility = (secKey: string) => {
     setSections(sections.map(s => s.section_key === secKey ? { ...s, is_visible: !s.is_visible } : s));
+  };
+
+  // Animasi masuk per seksi (fitur PRO). Workspace non-Pro: abaikan pilihan.
+  const selectedSection = sections.find((s) => s.section_key === selectedSectionKey);
+  const handleSectionAnimationChange = (value: SectionAnimation) => {
+    if (!canUseAnimations) return;
+    setSections(
+      sections.map((s) =>
+        s.section_key === selectedSectionKey ? { ...s, animation: value } : s
+      )
+    );
   };
 
   const handleMoveUp = (index: number) => {
@@ -834,6 +869,52 @@ function AdvancedVisualEditorContent() {
             {/* TAB 1: SECTION-SPECIFIC INSPECTOR */}
             {inspectorTab === 'section' && (
               <div className="space-y-5 animate-in fade-in-50">
+                {/* ANIMASI MASUK SEKSI (FITUR PRO) — berlaku untuk seksi yang dipilih */}
+                <div className="space-y-2 p-3 rounded-xl bg-white/5 border border-[#C5A880]/30">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-[11px] font-bold text-[#C5A880] uppercase tracking-wider">
+                      Animasi Masuk
+                    </span>
+                    <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#C5A880] text-[#1F2421] flex-shrink-0">
+                      <Crown className="w-3 h-3" />
+                      PRO
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-gray-400 leading-relaxed">
+                    Animasi saat seksi &ldquo;{selectedSection?.custom_title || selectedSectionKey}&rdquo;
+                    muncul di layar tamu. Tersedia untuk Creator Pro ke atas.
+                  </p>
+                  <select
+                    value={selectedSection?.animation || 'none'}
+                    disabled={!canUseAnimations}
+                    onChange={(e) => handleSectionAnimationChange(e.target.value as SectionAnimation)}
+                    className="w-full px-2.5 py-1.5 rounded bg-[#1F2421] border border-white/10 text-white text-xs focus:outline-none focus:border-[#C5A880] disabled:opacity-50 disabled:cursor-not-allowed"
+                    aria-label="Pilih animasi masuk seksi"
+                  >
+                    {SECTION_ANIMATION_OPTIONS.map((opt) => (
+                      <option key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
+                  {canUseAnimations ? (
+                    <p className="text-[11px] text-gray-400 leading-relaxed">
+                      {SECTION_ANIMATION_OPTIONS.find((o) => o.value === (selectedSection?.animation || 'none'))?.description}
+                    </p>
+                  ) : (
+                    <p className="text-[11px] text-amber-300/90 leading-relaxed flex items-start gap-1.5">
+                      <Lock className="w-3 h-3 mt-0.5 flex-shrink-0" />
+                      <span>
+                        Fitur ini terkunci di paket Anda.{' '}
+                        <Link href="/dashboard/subscription" className="font-bold text-[#C5A880] hover:underline">
+                          Upgrade ke Creator Pro
+                        </Link>{' '}
+                        untuk memilih animasi per seksi.
+                      </span>
+                    </p>
+                  )}
+                </div>
+
                 {/* 1. HERO INSPECTOR */}
                 {selectedSectionKey === 'hero' && (
                   <div className="space-y-4">

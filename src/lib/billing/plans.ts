@@ -11,6 +11,7 @@ export const DEFAULT_FREE_ENTITLEMENTS: PlanEntitlements = {
   can_use_custom_domain: false,
   can_use_qr_checkin: false,
   can_export_guest_data: false,
+  can_use_custom_animations: false,
   max_team_seats: 1,
   monthly_publish_credits: 0,
   has_analytics: false,
@@ -28,6 +29,7 @@ export const DEFAULT_PERSONAL_PLUS_ENTITLEMENTS: PlanEntitlements = {
   can_use_custom_domain: false,
   can_use_qr_checkin: false,
   can_export_guest_data: true,
+  can_use_custom_animations: false,
   max_team_seats: 1,
   monthly_publish_credits: 3,
   has_analytics: true,
@@ -45,6 +47,7 @@ export const DEFAULT_CREATOR_PRO_ENTITLEMENTS: PlanEntitlements = {
   can_use_custom_domain: true,
   can_use_qr_checkin: true,
   can_export_guest_data: true,
+  can_use_custom_animations: true,
   max_team_seats: 1,
   monthly_publish_credits: 10,
   has_analytics: true,
@@ -62,6 +65,7 @@ export const DEFAULT_VENDOR_STUDIO_ENTITLEMENTS: PlanEntitlements = {
   can_use_custom_domain: true,
   can_use_qr_checkin: true,
   can_export_guest_data: true,
+  can_use_custom_animations: true,
   max_team_seats: 3, // Owner + 2 team members
   monthly_publish_credits: 30, // 30 published invitations / period
   has_analytics: true,
