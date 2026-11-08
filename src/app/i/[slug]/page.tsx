@@ -222,7 +222,7 @@ function PublicInvitationContent() {
       {isOpen && theme_configuration.background_music_url && (
         <button
           onClick={toggleAudio}
-          className="fixed bottom-6 right-6 z-40 w-12 h-12 rounded-full bg-[#1F2421]/90 text-[#FCFBF7] border border-[#C5A880]/50 shadow-xl flex items-center justify-center hover:scale-105 active:scale-95 transition-all"
+          className="fixed bottom-4 right-4 z-40 w-12 h-12 rounded-full bg-[#1F2421]/90 text-[#FCFBF7] border border-[#C5A880]/50 shadow-xl flex items-center justify-center hover:scale-105 active:scale-95 transition-all"
           title={isPlayingAudio ? 'Jeda Musik' : 'Putar Musik'}
           aria-label="Toggle Music"
         >
@@ -238,7 +238,7 @@ function PublicInvitationContent() {
       {isOpen && (
         <button
           onClick={() => setShowFullscreenQr(true)}
-          className="fixed bottom-6 left-6 z-40 px-3.5 py-2.5 rounded-full bg-[#1F2421]/90 text-[#FCFBF7] border border-[#C5A880]/50 shadow-xl flex items-center gap-2 hover:scale-105 active:scale-95 transition-all text-xs font-semibold backdrop-blur-sm"
+          className="fixed bottom-4 left-4 z-40 px-3.5 py-2.5 rounded-full bg-[#1F2421]/90 text-[#FCFBF7] border border-[#C5A880]/50 shadow-xl flex items-center gap-2 hover:scale-105 active:scale-95 transition-all text-xs font-semibold backdrop-blur-sm"
           title="Buka QR Presensi Masuk"
           aria-label="Open QR Ticket"
         >
@@ -318,7 +318,7 @@ function PublicInvitationContent() {
       <div className="max-w-2xl mx-auto min-h-screen bg-white/60 shadow-xl border-x border-[#E8E3DA]">
         
         {/* HERO SECTION */}
-        <section className="relative min-h-[90vh] flex flex-col items-center justify-between p-8 text-center border-b border-[#E8E3DA] overflow-hidden">
+        <section className="relative min-h-[90vh] flex flex-col items-center justify-between p-6 sm:p-8 text-center border-b border-[#E8E3DA] overflow-hidden">
           <div className="absolute inset-0 z-0">
             <img
               src={event_data.cover_image_url || 'https://images.unsplash.com/photo-1519741497674-611481863552?w=1200'}
@@ -342,15 +342,15 @@ function PublicInvitationContent() {
 
           {/* Countdown timer */}
           <div className="relative z-10 py-8 w-full max-w-md">
-            <div className="grid grid-cols-4 gap-3">
+            <div className="grid grid-cols-4 gap-2 sm:gap-3">
               {[
                 { label: 'Hari', val: timeLeft.days },
                 { label: 'Jam', val: timeLeft.hours },
                 { label: 'Menit', val: timeLeft.minutes },
                 { label: 'Detik', val: timeLeft.seconds },
               ].map((item, idx) => (
-                <div key={idx} className="p-3 rounded-2xl bg-white/90 border border-[#E8E3DA] shadow-sm text-center">
-                  <span className="font-serif-luxury text-2xl sm:text-3xl font-bold text-[#1F2421]">
+                <div key={idx} className="p-2 sm:p-3 rounded-2xl bg-white/90 border border-[#E8E3DA] shadow-sm text-center min-w-0">
+                  <span className="font-serif-luxury text-xl sm:text-3xl font-bold text-[#1F2421]">
                     {String(item.val).padStart(2, '0')}
                   </span>
                   <p className="text-[10px] uppercase font-bold tracking-wider text-[#9A7B4F] mt-1">
@@ -616,7 +616,7 @@ function PublicInvitationContent() {
                           key={opt.id}
                           type="button"
                           onClick={() => setRsvpStatus(opt.id as any)}
-                          className={`py-2 text-xs font-semibold rounded-lg border transition-all ${
+                          className={`py-2.5 min-h-[40px] text-[11px] sm:text-xs font-semibold rounded-lg border transition-all ${
                             rsvpStatus === opt.id
                               ? 'bg-[#1F2421] text-white border-[#1F2421]'
                               : 'bg-white text-[#4E5450] border-[#E8E3DA] hover:bg-[#F3EFE6]'

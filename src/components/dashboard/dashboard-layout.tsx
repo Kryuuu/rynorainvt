@@ -261,7 +261,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Mobile Header Bar */}
-        <header className="lg:hidden h-16 bg-[#FCFBF7] border-b border-[#E8E3DA] px-4 flex items-center justify-between z-30">
+        <header className="lg:hidden sticky top-0 h-16 bg-[#FCFBF7] border-b border-[#E8E3DA] px-4 flex items-center justify-between z-30">
           <Link href="/dashboard" className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-[#1F2421] flex items-center justify-center text-[#FCFBF7]">
               <span className="font-serif-luxury font-bold text-[#C5A880]">R</span>
@@ -299,6 +299,12 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                 );
               })}
             </nav>
+            <Link href="/editor/new" onClick={() => setMobileNavOpen(false)}>
+              <Button variant="gold" className="w-full text-xs shadow-sm justify-center">
+                <Sparkles className="w-3.5 h-3.5 mr-1.5" />
+                Buat Undangan Baru
+              </Button>
+            </Link>
             <div className="pt-2 border-t border-[#E8E3DA] flex gap-2">
               <Link href="/vendor" className="text-xs text-[#C5A880] underline font-medium">Vendor Portal</Link>
               <span className="text-gray-300">|</span>

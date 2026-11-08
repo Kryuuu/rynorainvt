@@ -39,12 +39,12 @@ function TemplateDetailContent() {
             <span>Katalog</span>
           </Link>
           <div className="h-4 w-[1px] bg-white/20" />
-          <div className="flex items-center gap-2">
-            <span className="font-semibold text-sm">{template.name}</span>
+          <div className="flex items-center gap-2 min-w-0">
+            <span className="font-semibold text-sm truncate max-w-[120px] sm:max-w-none">{template.name}</span>
             {template.is_premium ? (
-              <Badge variant="gold" className="text-[10px]">Premium</Badge>
+              <Badge variant="gold" className="text-[10px] hidden sm:inline-flex">Premium</Badge>
             ) : (
-              <Badge variant="secondary" className="text-[10px]">Gratis</Badge>
+              <Badge variant="secondary" className="text-[10px] hidden sm:inline-flex">Gratis</Badge>
             )}
           </div>
         </div>
@@ -75,8 +75,8 @@ function TemplateDetailContent() {
         <div>
           <Link href={`/dashboard?create=true&template=${template.id}`}>
             <Button variant="gold" size="sm">
-              <Sparkles className="w-3.5 h-3.5 mr-1.5" />
-              Gunakan Template Ini
+              <Sparkles className="w-3.5 h-3.5 sm:mr-1.5" />
+              <span className="hidden sm:inline">Gunakan Template Ini</span>
             </Button>
           </Link>
         </div>
@@ -87,7 +87,7 @@ function TemplateDetailContent() {
         <div
           className={`transition-all duration-300 shadow-2xl rounded-2xl overflow-hidden border border-[#E8E3DA] ${
             deviceMode === 'mobile'
-              ? 'w-[375px] h-[780px] bg-white'
+              ? 'w-full max-w-[375px] h-[780px] bg-white'
               : 'w-full max-w-5xl h-[800px] bg-white'
           }`}
         >

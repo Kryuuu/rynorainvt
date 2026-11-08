@@ -134,9 +134,10 @@ export default function VendorPortalPage() {
       {/* Top Vendor Header Bar */}
       <header className="h-16 bg-[#1F2421] text-white px-4 sm:px-8 flex items-center justify-between border-b border-[#E8E3DA] sticky top-0 z-40">
         <div className="flex items-center gap-4">
-          <Link href="/dashboard" className="flex items-center gap-1.5 text-xs text-[#C5A880] hover:text-white">
+          <Link href="/dashboard" className="flex items-center gap-1.5 text-xs text-[#C5A880] hover:text-white shrink-0">
             <ArrowLeft className="w-4 h-4" />
-            <span>Ke Dashboard Personal</span>
+            <span className="hidden sm:inline">Ke Dashboard Personal</span>
+            <span className="sm:hidden">Dashboard</span>
           </Link>
           <div className="h-4 w-[1px] bg-white/20" />
           <div className="flex items-center gap-2">
@@ -160,7 +161,7 @@ export default function VendorPortalPage() {
             <span className="text-gray-300">Sisa Kuota Publikasi:</span>
             <span className="font-bold text-[#C5A880]">{remainingCredits} / 30</span>
           </div>
-          <Badge variant="gold" className="text-[10px]">Vendor Studio Plan</Badge>
+          <Badge variant="gold" className="text-[10px] hidden sm:inline-flex">Vendor Studio Plan</Badge>
         </div>
       </header>
 

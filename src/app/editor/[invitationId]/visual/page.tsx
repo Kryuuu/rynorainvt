@@ -113,6 +113,8 @@ function AdvancedVisualEditorContent() {
   const [deviceMode, setDeviceMode] = useState<'mobile' | 'tablet' | 'desktop'>('mobile');
   const [selectedSectionKey, setSelectedSectionKey] = useState<string>('hero');
   const [inspectorTab, setInspectorTab] = useState<'section' | 'theme'>('section');
+  // Mobile: left/right panels become slide-in drawers (canvas is full-width)
+  const [mobilePanel, setMobilePanel] = useState<'none' | 'sections' | 'inspector'>('none');
   const [isSaved, setIsSaved] = useState(true);
   const [showAddSectionModal, setShowAddSectionModal] = useState(false);
 
@@ -285,12 +287,36 @@ function AdvancedVisualEditorContent() {
             <span className="font-serif-luxury text-sm font-bold truncate max-w-[200px] sm:max-w-xs">
               {initialInvitation.title}
             </span>
-            <Badge variant="gold" className="text-[9px] bg-[#C5A880] text-[#1F2421]">Full Visual Editor</Badge>
+            <Badge variant="gold" className="text-[9px] bg-[#C5A880] text-[#1F2421] hidden sm:inline-flex">Full Visual Editor</Badge>
           </div>
         </div>
 
+        {/* Mobile panel toggles (drawers) — hidden on desktop where panels are docked */}
+        <div className="flex items-center gap-1 lg:hidden">
+          <button
+            onClick={() => setMobilePanel(mobilePanel === 'sections' ? 'none' : 'sections')}
+            className={`px-2 py-1.5 rounded-lg text-xs flex items-center gap-1.5 border transition-colors ${
+              mobilePanel === 'sections' ? 'bg-[#C5A880] text-[#1F2421] border-[#C5A880] font-bold' : 'text-gray-300 border-white/10 bg-white/5'
+            }`}
+            aria-label="Buka panel seksi"
+          >
+            <Layers className="w-4 h-4" />
+            <span className="hidden sm:inline">Seksi</span>
+          </button>
+          <button
+            onClick={() => setMobilePanel(mobilePanel === 'inspector' ? 'none' : 'inspector')}
+            className={`px-2 py-1.5 rounded-lg text-xs flex items-center gap-1.5 border transition-colors ${
+              mobilePanel === 'inspector' ? 'bg-[#C5A880] text-[#1F2421] border-[#C5A880] font-bold' : 'text-gray-300 border-white/10 bg-white/5'
+            }`}
+            aria-label="Buka inspektor"
+          >
+            <Sliders className="w-4 h-4" />
+            <span className="hidden sm:inline">Edit</span>
+          </button>
+        </div>
+
         {/* Device Switcher */}
-        <div className="flex items-center gap-1 bg-white/5 p-1 rounded-lg border border-white/10">
+        <div className="hidden sm:flex items-center gap-1 bg-white/5 p-1 rounded-lg border border-white/10">
           <button
             onClick={() => setDeviceMode('mobile')}
             className={`px-2.5 py-1 rounded text-xs flex items-center gap-1.5 transition-colors ${
@@ -338,25 +364,45 @@ function AdvancedVisualEditorContent() {
 
           <Link href={`/i/${initialInvitation.slug}`} target="_blank">
             <Button variant="gold" size="sm" className="text-xs font-semibold">
-              <Eye className="w-3.5 h-3.5 mr-1" />
-              Lihat Publik
+              <Eye className="w-3.5 h-3.5 sm:mr-1" />
+              <span className="hidden sm:inline">Lihat Publik</span>
             </Button>
           </Link>
         </div>
       </header>
 
+      {/* Mobile drawer backdrop */}
+      {mobilePanel !== 'none' && (
+        <div
+          className="fixed inset-0 z-30 bg-black/60 lg:hidden"
+          onClick={() => setMobilePanel('none')}
+          aria-hidden="true"
+        />
+      )}
+
       {/* MAIN BUILDER BODY */}
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex overflow-hidden min-h-0">
         {/* LEFT PANEL: STRUKTUR SEKSI & REORDER */}
-        <aside className="w-64 sm:w-72 border-r border-white/10 bg-[#181A18] flex flex-col justify-between flex-shrink-0">
+        <aside className={`fixed inset-y-0 left-0 z-40 w-72 max-w-[85vw] border-r border-white/10 bg-[#181A18] flex flex-col justify-between flex-shrink-0 transition-transform duration-300 lg:static lg:z-auto lg:w-64 lg:max-w-none lg:translate-x-0 ${
+          mobilePanel === 'sections' ? 'translate-x-0' : '-translate-x-full'
+        }`}>
           <div className="p-3.5 border-b border-white/10 flex items-center justify-between">
             <div className="flex items-center gap-1.5">
               <Layers className="w-4 h-4 text-[#C5A880]" />
               <span className="text-xs font-bold uppercase tracking-wider text-white">Struktur Seksi</span>
             </div>
-            <span className="text-[10px] bg-white/10 px-2 py-0.5 rounded-full text-gray-300">
-              {sections.length} Seksi
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] bg-white/10 px-2 py-0.5 rounded-full text-gray-300">
+                {sections.length} Seksi
+              </span>
+              <button
+                onClick={() => setMobilePanel('none')}
+                className="lg:hidden p-1 rounded hover:bg-white/10 text-gray-300"
+                aria-label="Tutup panel seksi"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
           </div>
 
           <div className="flex-1 overflow-y-auto p-2.5 space-y-1.5 scrollbar-thin">
@@ -365,7 +411,7 @@ function AdvancedVisualEditorContent() {
               return (
                 <div
                   key={sec.id}
-                  onClick={() => setSelectedSectionKey(sec.section_key)}
+                  onClick={() => { setSelectedSectionKey(sec.section_key); setMobilePanel('none'); }}
                   className={`p-2.5 rounded-xl border text-xs cursor-pointer flex items-center justify-between transition-all ${
                     isSelected
                       ? 'border-[#C5A880] bg-white/10 font-bold text-white shadow-md ring-1 ring-[#C5A880]/50'
@@ -412,9 +458,9 @@ function AdvancedVisualEditorContent() {
           <div
             className={`transition-all duration-300 rounded-3xl overflow-hidden border border-white/20 shadow-2xl bg-[#FCFBF7] ${
               deviceMode === 'mobile'
-                ? 'w-[390px] h-[780px]'
+                ? 'w-full max-w-[390px] h-full max-h-[780px]'
                 : deviceMode === 'tablet'
-                ? 'w-[640px] h-[780px]'
+                ? 'w-full max-w-[640px] h-full max-h-[780px]'
                 : 'w-full max-w-4xl h-full'
             }`}
           >
@@ -742,14 +788,25 @@ function AdvancedVisualEditorContent() {
         </main>
 
         {/* RIGHT PANEL: DYNAMIC CONTEXT-AWARE INSPECTOR */}
-        <aside className="w-80 border-l border-white/10 bg-[#181A18] flex flex-col justify-between overflow-y-auto flex-shrink-0 scrollbar-thin">
+        <aside className={`fixed inset-y-0 right-0 z-40 w-80 max-w-[90vw] border-l border-white/10 bg-[#181A18] flex flex-col justify-between overflow-y-auto flex-shrink-0 scrollbar-thin transition-transform duration-300 lg:static lg:z-auto lg:max-w-none lg:translate-x-0 ${
+          mobilePanel === 'inspector' ? 'translate-x-0' : 'translate-x-full'
+        }`}>
           {/* Inspector Header & Tab Switcher */}
           <div className="p-3.5 border-b border-white/10 space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold uppercase tracking-wider text-[#C5A880]">
                 Inspektor Properti
               </span>
-              <span className="text-[10px] text-gray-400 capitalize">{selectedSectionKey}</span>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] text-gray-400 capitalize">{selectedSectionKey}</span>
+                <button
+                  onClick={() => setMobilePanel('none')}
+                  className="lg:hidden p-1 rounded hover:bg-white/10 text-gray-300"
+                  aria-label="Tutup inspektor"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-1 bg-white/5 p-1 rounded-lg border border-white/10 text-xs">

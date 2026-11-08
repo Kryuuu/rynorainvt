@@ -28,6 +28,11 @@
   }
 }
 
+html,
+body {
+  overflow-x: clip;
+}
+
 body {
   background-color: var(--background);
   color: var(--foreground);
@@ -61,6 +66,14 @@ body {
 .luxury-card:hover {
   box-shadow: 0 10px 30px -4px rgba(31, 36, 33, 0.08);
   border-color: #D8D2C5;
+}
+
+/* Hide scrollbars for horizontal chip/tab rows (keeps swipe-scroll working) */
+@utility scrollbar-none {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 /* Clean custom scrollbar */

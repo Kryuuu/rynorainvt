@@ -166,10 +166,10 @@ export default function GuestManagementPage() {
       <div className="space-y-8 max-w-7xl mx-auto">
         
         {/* Header & Guest Entitlement Progress Bar */}
-        <div className="p-6 sm:p-8 rounded-3xl bg-white border border-[#E8E3DA] shadow-sm space-y-6">
+        <div className="p-4 sm:p-6 lg:p-8 rounded-3xl bg-white border border-[#E8E3DA] shadow-sm space-y-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="space-y-1">
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <span className="text-xs font-bold uppercase tracking-wider text-[#9A7B4F]">
                   Manajemen Undangan & Tamu
                 </span>
@@ -327,7 +327,7 @@ export default function GuestManagementPage() {
 
             {/* Table */}
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs text-[#4E5450]">
+              <table className="w-full min-w-[760px] text-left text-xs text-[#4E5450]">
                 <thead className="bg-[#FAF8F5] text-[#1F2421] uppercase text-[10px] font-bold tracking-wider border-b border-[#E8E3DA]">
                   <tr>
                     <th className="py-3.5 px-6">Nama Tamu</th>
@@ -340,10 +340,10 @@ export default function GuestManagementPage() {
                 <tbody className="divide-y divide-[#E8E3DA]">
                   {filteredGuests.map((guest) => (
                     <tr key={guest.id} className="hover:bg-[#FCFBF7] transition-colors">
-                      <td className="py-4 px-6 font-semibold text-[#1F2421]">
+                      <td className="py-4 px-4 sm:px-6 font-semibold text-[#1F2421] whitespace-nowrap">
                         {guest.name}
                       </td>
-                      <td className="py-4 px-6 text-[#7A807C]">
+                      <td className="py-4 px-4 sm:px-6 text-[#7A807C] whitespace-nowrap">
                         {guest.phone || '-'}
                       </td>
                       <td className="py-4 px-6 space-x-2">
@@ -386,7 +386,7 @@ export default function GuestManagementPage() {
                           </div>
                         )}
                       </td>
-                      <td className="py-4 px-6 text-right space-x-2">
+                      <td className="py-4 px-4 sm:px-6 text-right whitespace-nowrap space-x-2">
                         {/* Copy Personalized Link Button */}
                         <button
                           onClick={() => handleCopyPersonalLink(guest)}
