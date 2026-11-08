@@ -39,6 +39,8 @@ import { dataStore, INITIAL_TEMPLATES } from '@/lib/data-store';
 import { EventCategory, Invitation, ThemeConfiguration, EventData } from '@/types';
 import { slugify } from '@/lib/utils';
 import { useAuth } from '@/lib/auth-context';
+import { useToast } from '@/components/ui/toast';
+import { errorMessage } from '@/lib/feedback';
 
 const AUDIO_PRESETS = [
   {
@@ -174,6 +176,7 @@ export default function SimpleEditorPage() {
   // Preview Device
   const [previewDevice, setPreviewDevice] = useState<'mobile' | 'desktop'>('mobile');
   const [isPublishing, setIsPublishing] = useState(false);
+  const toast = useToast();
   const [publishedSlug, setPublishedSlug] = useState<string | null>(null);
 
   const selectedTemplate = INITIAL_TEMPLATES.find(t => t.id === selectedTemplateId) || INITIAL_TEMPLATES[0];
@@ -266,10 +269,16 @@ export default function SimpleEditorPage() {
     };
 
     setTimeout(() => {
-      dataStore.saveInvitation(newInvitation);
-      setIsPublishing(false);
-      setPublishedSlug(generatedSlug);
-      setCurrentStep(8);
+      try {
+        dataStore.saveInvitation(newInvitation);
+        setIsPublishing(false);
+        setPublishedSlug(generatedSlug);
+        setCurrentStep(8);
+        toast.success('Undangan berhasil diterbitkan!', `Tautan undangan Anda: /i/${generatedSlug}`);
+      } catch (err) {
+        setIsPublishing(false);
+        toast.error('Gagal menerbitkan undangan', errorMessage(err, 'Gagal menerbitkan undangan') + ' — data Anda masih ada di layar ini, silakan coba lagi.');
+      }
     }, 800);
   };
 

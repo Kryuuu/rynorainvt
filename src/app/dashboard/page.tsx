@@ -23,6 +23,8 @@ import { dataStore } from '@/lib/data-store';
 import { formatDateWITA } from '@/lib/utils';
 import { useState } from 'react';
 import { useAuth } from '@/lib/auth-context';
+import { useToast } from '@/components/ui/toast';
+import { copyText } from '@/lib/feedback';
 
 export default function DashboardOverviewPage() {
   const { user, profile } = useAuth();
@@ -32,14 +34,19 @@ export default function DashboardOverviewPage() {
   const guests = dataStore.getGuestsByInvitation('inv_andi_siti');
   const rsvps = dataStore.rsvps.filter(r => r.invitation_id === 'inv_andi_siti');
   const [copiedSlug, setCopiedSlug] = useState<string | null>(null);
+  const toast = useToast();
 
   const attendingCount = rsvps.filter(r => r.attendance_status === 'attending').length;
 
-  const handleCopyLink = (slug: string) => {
+  const handleCopyLink = async (slug: string) => {
     const url = `${window.location.origin}/i/${slug}`;
-    navigator.clipboard.writeText(url);
-    setCopiedSlug(slug);
-    setTimeout(() => setCopiedSlug(null), 2000);
+    if (await copyText(url)) {
+      setCopiedSlug(slug);
+      setTimeout(() => setCopiedSlug(null), 2000);
+      toast.success('Tautan undangan berhasil disalin!', 'Tautan siap dibagikan ke tamu.');
+    } else {
+      toast.error('Gagal menyalin tautan', 'Browser tidak mengizinkan akses clipboard. Salin URL secara manual dari address bar.');
+    }
   };
 
   return (

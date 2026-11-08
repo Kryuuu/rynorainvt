@@ -31,6 +31,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
+import { useToast } from '@/components/ui/toast';
+import { copyText } from '@/lib/feedback';
 
 // Audio feedback helper using Web Audio API
 function playSound(type: 'success' | 'warning' | 'error') {
@@ -97,6 +99,7 @@ function CheckinScannerContent() {
   const slug = (params?.slug as string) || 'andi-siti';
   const router = useRouter();
 
+  const toast = useToast();
   const [invitation, setInvitation] = useState<Invitation | null>(null);
   const [guests, setGuests] = useState<Guest[]>([]);
   const [isCameraActive, setIsCameraActive] = useState(false);
@@ -326,9 +329,11 @@ function CheckinScannerContent() {
   // Undo Check-in
   const handleUndoCheckIn = (guestId: string) => {
     if (!invitation) return;
+    const guest = guests.find((g) => g.id === guestId);
     dataStore.undoCheckIn(guestId);
     setGuests(dataStore.getGuestsByInvitation(invitation.id));
     setScanResult(null);
+    toast.success('Presensi dibatalkan', guest ? `Status kehadiran ${guest.name} dikembalikan ke Belum Hadir.` : 'Status kehadiran dikembalikan ke Belum Hadir.');
   };
 
   // Metrics
@@ -746,10 +751,13 @@ function CheckinScannerContent() {
             <div className="pt-3 border-t border-[#2E3531] flex items-center justify-between text-[11px] text-gray-400">
               <span className="truncate">Tautan Meja Registrasi:</span>
               <button
-                onClick={() => {
+                onClick={async () => {
                   const url = typeof window !== 'undefined' ? window.location.href : '';
-                  navigator.clipboard.writeText(url);
-                  alert('Tautan Scanner Meja Penerima Tamu berhasil disalin!');
+                  if (await copyText(url)) {
+                    toast.success('Tautan scanner berhasil disalin!', 'Bagikan tautan ini ke meja registrasi / panitia.');
+                  } else {
+                    toast.error('Gagal menyalin tautan', 'Browser tidak mengizinkan akses clipboard. Salin URL secara manual dari address bar.');
+                  }
                 }}
                 className="text-[#C5A880] hover:underline font-semibold flex items-center gap-1 flex-shrink-0"
               >

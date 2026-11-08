@@ -31,6 +31,8 @@ import { Guest, RsvpResponse } from '@/types';
 import { formatGuestUsageBadge, checkGuestCreationLimit } from '@/lib/billing/entitlements';
 import { DEFAULT_PERSONAL_PLUS_ENTITLEMENTS } from '@/lib/billing/plans';
 import { formatDateWITA } from '@/lib/utils';
+import { useToast } from '@/components/ui/toast';
+import { errorMessage as toErrorMessage, copyText } from '@/lib/feedback';
 
 export default function GuestManagementPage() {
   const invitationId = 'inv_andi_siti';
@@ -49,6 +51,7 @@ export default function GuestManagementPage() {
   const [qrModalDataUrl, setQrModalDataUrl] = useState<string | null>(null);
   const [copiedToken, setCopiedToken] = useState<string | null>(null);
   const [copiedScannerLink, setCopiedScannerLink] = useState(false);
+  const toast = useToast();
 
   // New Guest Form State
   const [newGuestName, setNewGuestName] = useState('');
@@ -90,9 +93,11 @@ export default function GuestManagementPage() {
       setAddGuestModalOpen(false);
       setNewGuestName('');
       setNewGuestPhone('');
+      toast.success('Tamu berhasil ditambahkan!', `${created.name} tersimpan dan tetap ada setelah halaman di-refresh.`);
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Gagal menambahkan tamu';
+      const msg = toErrorMessage(err, 'Gagal menambahkan tamu');
       setErrorMessage(msg);
+      toast.error('Gagal menambahkan tamu', msg);
     }
   };
 
@@ -128,8 +133,33 @@ export default function GuestManagementPage() {
       setCsvModalOpen(false);
       setCsvInput('');
       setCsvValidationResult(null);
+      toast.success('Import CSV berhasil!', `${added.length} tamu berhasil ditambahkan dan tersimpan.`);
     } catch (err: unknown) {
-      alert(err instanceof Error ? err.message : 'Gagal import');
+      toast.error('Gagal import CSV', toErrorMessage(err, 'Gagal import') + ' — tidak ada tamu yang ditambahkan, silakan coba lagi.');
+    }
+  };
+
+  const handleGuestCheckIn = (guest: Guest) => {
+    try {
+      const res = dataStore.checkInGuestById(guest.id, 'dashboard_host');
+      if (res.success) {
+        setGuests([...dataStore.getGuestsByInvitation(invitationId)]);
+        toast.success('Check-in berhasil!', `${guest.name} telah dicatat hadir.`);
+      } else {
+        toast.error('Check-in gagal', res.error || 'Gagal memproses check-in.');
+      }
+    } catch (err) {
+      toast.error('Check-in gagal', toErrorMessage(err, 'Gagal memproses check-in.'));
+    }
+  };
+
+  const handleGuestUndoCheckIn = (guest: Guest) => {
+    try {
+      dataStore.undoCheckIn(guest.id);
+      setGuests([...dataStore.getGuestsByInvitation(invitationId)]);
+      toast.success('Presensi dibatalkan', `Status kehadiran ${guest.name} dikembalikan ke Belum Hadir.`);
+    } catch (err) {
+      toast.error('Gagal membatalkan presensi', toErrorMessage(err, 'Gagal membatalkan presensi.'));
     }
   };
 
@@ -145,20 +175,28 @@ export default function GuestManagementPage() {
     }).then(setQrModalDataUrl).catch(console.error);
   };
 
-  const handleCopyScannerLink = () => {
+  const handleCopyScannerLink = async () => {
     const origin = typeof window !== 'undefined' ? window.location.origin : '';
     const url = `${origin}/checkin/andi-siti`;
-    navigator.clipboard.writeText(url);
-    setCopiedScannerLink(true);
-    setTimeout(() => setCopiedScannerLink(false), 2000);
+    if (await copyText(url)) {
+      setCopiedScannerLink(true);
+      setTimeout(() => setCopiedScannerLink(false), 2000);
+      toast.success('Tautan meja panitia berhasil disalin!', 'Bagikan tautan ini ke panitia/usher.');
+    } else {
+      toast.error('Gagal menyalin tautan', 'Browser tidak mengizinkan akses clipboard. Salin URL secara manual dari address bar.');
+    }
   };
 
-  const handleCopyPersonalLink = (guest: Guest) => {
+  const handleCopyPersonalLink = async (guest: Guest) => {
     const origin = typeof window !== 'undefined' ? window.location.origin : '';
     const url = `${origin}/i/andi-siti?to=${encodeURIComponent(guest.name)}&u=${guest.invitation_token}`;
-    navigator.clipboard.writeText(url);
-    setCopiedToken(guest.invitation_token);
-    setTimeout(() => setCopiedToken(null), 2000);
+    if (await copyText(url)) {
+      setCopiedToken(guest.invitation_token);
+      setTimeout(() => setCopiedToken(null), 2000);
+      toast.success('Tautan personal berhasil disalin!', `Tautan undangan untuk ${guest.name} siap dibagikan.`);
+    } else {
+      toast.error('Gagal menyalin tautan', 'Browser tidak mengizinkan akses clipboard. Salin URL secara manual dari address bar.');
+    }
   };
 
   return (
@@ -362,10 +400,7 @@ export default function GuestManagementPage() {
                               <span>Hadir ({new Date(guest.checked_in_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })})</span>
                             </div>
                             <button
-                              onClick={() => {
-                                dataStore.undoCheckIn(guest.id);
-                                setGuests([...dataStore.getGuestsByInvitation(invitationId)]);
-                              }}
+                              onClick={() => handleGuestUndoCheckIn(guest)}
                               className="text-[10px] text-gray-400 hover:text-red-600 underline"
                             >
                               Batalkan Presensi
@@ -375,10 +410,7 @@ export default function GuestManagementPage() {
                           <div className="space-y-0.5">
                             <span className="text-[#8A908C] text-[11px] block">Belum Hadir</span>
                             <button
-                              onClick={() => {
-                                dataStore.checkInGuestById(guest.id, 'dashboard_host');
-                                setGuests([...dataStore.getGuestsByInvitation(invitationId)]);
-                              }}
+                              onClick={() => handleGuestCheckIn(guest)}
                               className="text-[10px] text-[#C5A880] hover:underline font-semibold"
                             >
                               + Check-in Manual

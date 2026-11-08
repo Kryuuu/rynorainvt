@@ -49,6 +49,8 @@ import { SECTION_ANIMATION_OPTIONS } from '@/lib/section-animations';
 import { canUseCustomAnimations } from '@/lib/billing/entitlements';
 import { formatDateWITA } from '@/lib/utils';
 import { useAuth } from '@/lib/auth-context';
+import { useToast } from '@/components/ui/toast';
+import { errorMessage } from '@/lib/feedback';
 
 // Audio Presets
 const AUDIO_PRESETS = [
@@ -124,6 +126,10 @@ function AdvancedVisualEditorContent() {
   // Mobile: left/right panels become slide-in drawers (canvas is full-width)
   const [mobilePanel, setMobilePanel] = useState<'none' | 'sections' | 'inspector'>('none');
   const [isSaved, setIsSaved] = useState(true);
+  const [isSavingManual, setIsSavingManual] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const toast = useToast();
+  const lastAutosaveError = useRef<string | null>(null);
   const [showAddSectionModal, setShowAddSectionModal] = useState(false);
 
   // Audio preview in editor
@@ -185,18 +191,32 @@ function AdvancedVisualEditorContent() {
         : sections.map((s) =>
             s.animation && s.animation !== 'none' ? { ...s, animation: 'none' as SectionAnimation } : s
           );
-      dataStore.saveInvitation({
-        ...initialInvitation,
-        event_data: eventData,
-        theme_configuration: theme,
-        sections: sectionsToSave,
-        updated_at: new Date().toISOString(),
-      });
-      setIsSaved(true);
+      try {
+        dataStore.saveInvitation({
+          ...initialInvitation,
+          event_data: eventData,
+          theme_configuration: theme,
+          sections: sectionsToSave,
+          updated_at: new Date().toISOString(),
+        });
+        setIsSaved(true);
+        setSaveError(null);
+        lastAutosaveError.current = null;
+      } catch (err) {
+        // Autosave gagal (mis. penyimpanan lokal penuh): jangan diam-diam
+        // menandai "Tersimpan", beri tahu pengguna sekali per pesan error.
+        const msg = errorMessage(err, 'Penyimpanan otomatis gagal');
+        setIsSaved(false);
+        setSaveError(msg);
+        if (lastAutosaveError.current !== msg) {
+          lastAutosaveError.current = msg;
+          toast.error('Penyimpanan otomatis gagal', msg + ' — perubahan Anda masih ada di layar ini, silakan coba Simpan Manual.');
+        }
+      }
     }, 1200);
 
     return () => clearTimeout(timeout);
-  }, [eventData, theme, sections, canUseAnimations]);
+  }, [eventData, theme, sections, canUseAnimations, toast]);
 
   // Section Manipulation Handlers
   const handleToggleVisibility = (secKey: string) => {
@@ -387,7 +407,12 @@ function AdvancedVisualEditorContent() {
         {/* Actions & Autosave Indicator */}
         <div className="flex items-center gap-3">
           <div className="text-[11px] text-gray-400 hidden sm:flex items-center gap-1.5">
-            {isSaved ? (
+            {saveError ? (
+              <>
+                <X className="w-3.5 h-3.5 text-red-400" />
+                <span className="text-red-400 font-medium" title={saveError}>Gagal menyimpan otomatis</span>
+              </>
+            ) : isSaved ? (
               <>
                 <Check className="w-3.5 h-3.5 text-emerald-400" />
                 <span className="text-emerald-400 font-medium">Tersimpan otomatis</span>
@@ -1638,19 +1663,34 @@ function AdvancedVisualEditorContent() {
               variant="gold"
               size="sm"
               className="w-full text-xs font-semibold"
+              disabled={isSavingManual}
+              isLoading={isSavingManual}
               onClick={() => {
-                dataStore.saveInvitation({
-                  ...initialInvitation,
-                  event_data: eventData,
-                  theme_configuration: theme,
-                  sections,
-                  updated_at: new Date().toISOString(),
-                });
-                alert('Seluruh perubahan visual berhasil disimpan!');
+                setIsSavingManual(true);
+                try {
+                  dataStore.saveInvitation({
+                    ...initialInvitation,
+                    event_data: eventData,
+                    theme_configuration: theme,
+                    sections,
+                    updated_at: new Date().toISOString(),
+                  });
+                  setIsSaved(true);
+                  setSaveError(null);
+                  lastAutosaveError.current = null;
+                  toast.success('Perubahan visual berhasil disimpan!', 'Seluruh perubahan tersimpan dan tetap ada setelah halaman di-refresh.');
+                } catch (err) {
+                  const msg = errorMessage(err, 'Gagal menyimpan perubahan visual');
+                  setIsSaved(false);
+                  setSaveError(msg);
+                  toast.error('Gagal menyimpan perubahan', msg + ' — data Anda masih ada di layar ini, silakan coba lagi.');
+                } finally {
+                  setIsSavingManual(false);
+                }
               }}
             >
               <Save className="w-3.5 h-3.5 mr-1" />
-              Simpan Manual
+              {isSavingManual ? 'Menyimpan...' : 'Simpan Manual'}
             </Button>
           </div>
         </aside>

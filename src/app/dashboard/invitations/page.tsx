@@ -20,16 +20,23 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { dataStore } from '@/lib/data-store';
 import { formatDateWITA } from '@/lib/utils';
+import { useToast } from '@/components/ui/toast';
+import { copyText } from '@/lib/feedback';
 
 export default function InvitationsListPage() {
   const [invitations, setInvitations] = useState(dataStore.getInvitationsByWorkspace('ws_personal_01'));
   const [copiedSlug, setCopiedSlug] = useState<string | null>(null);
+  const toast = useToast();
 
-  const handleCopy = (slug: string) => {
+  const handleCopy = async (slug: string) => {
     const url = `${window.location.origin}/i/${slug}`;
-    navigator.clipboard.writeText(url);
-    setCopiedSlug(slug);
-    setTimeout(() => setCopiedSlug(null), 2000);
+    if (await copyText(url)) {
+      setCopiedSlug(slug);
+      setTimeout(() => setCopiedSlug(null), 2000);
+      toast.success('Tautan undangan berhasil disalin!', 'Tautan siap dibagikan ke tamu.');
+    } else {
+      toast.error('Gagal menyalin tautan', 'Browser tidak mengizinkan akses clipboard. Salin URL secara manual dari address bar.');
+    }
   };
 
   return (

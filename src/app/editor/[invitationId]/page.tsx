@@ -22,6 +22,8 @@ import { Badge } from '@/components/ui/badge';
 import { dataStore, INITIAL_INVITATIONS } from '@/lib/data-store';
 import { formatDateWITA } from '@/lib/utils';
 import { useAuth } from '@/lib/auth-context';
+import { useToast } from '@/components/ui/toast';
+import { errorMessage } from '@/lib/feedback';
 
 function EditExistingInvitationContent() {
   const params = useParams();
@@ -92,6 +94,8 @@ function EditExistingInvitationContent() {
   const [bgMusicUrl, setBgMusicUrl] = useState(invitation.theme_configuration.background_music_url || '');
   const [bgMusicTitle, setBgMusicTitle] = useState(invitation.theme_configuration.background_music_title || 'Audio Musik');
   const [isSaved, setIsSaved] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const toast = useToast();
 
   // File Upload Handlers
   const handleImageFile = (e: React.ChangeEvent<HTMLInputElement>, setter: (url: string) => void) => {
@@ -132,7 +136,10 @@ function EditExistingInvitationContent() {
   };
 
   const handleSave = () => {
-    dataStore.saveInvitation({
+    if (isSaving) return;
+    setIsSaving(true);
+    try {
+      dataStore.saveInvitation({
       ...invitation,
       title,
       event_data: {
@@ -154,9 +161,15 @@ function EditExistingInvitationContent() {
         background_music_title: bgMusicTitle,
       },
       updated_at: new Date().toISOString(),
-    });
-    setIsSaved(true);
-    setTimeout(() => setIsSaved(false), 2000);
+      });
+      setIsSaved(true);
+      setTimeout(() => setIsSaved(false), 2000);
+      toast.success('Undangan berhasil disimpan!', 'Perubahan tersimpan dan tetap ada setelah halaman di-refresh.');
+    } catch (err) {
+      toast.error('Gagal menyimpan undangan', errorMessage(err, 'Gagal menyimpan undangan') + ' — data Anda masih ada di layar ini, silakan coba lagi.');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -181,7 +194,7 @@ function EditExistingInvitationContent() {
               <span className="hidden sm:inline">Buka Visual Editor</span>
             </Button>
           </Link>
-          <Button variant="gold" size="sm" onClick={handleSave} className="text-xs">
+          <Button variant="gold" size="sm" onClick={handleSave} disabled={isSaving} isLoading={isSaving} className="text-xs">
             <Save className="w-3.5 h-3.5 sm:mr-1" />
             <span className="hidden sm:inline">{isSaved ? 'Tersimpan!' : 'Simpan Perubahan'}</span>
           </Button>
@@ -275,7 +288,7 @@ function EditExistingInvitationContent() {
 
             <div className="pt-4 border-t border-[#E8E3DA] flex justify-between items-center">
               <span className="text-[11px] text-[#7A807C]">Status Publikasi: {invitation.status}</span>
-              <Button variant="gold" size="sm" onClick={handleSave}>
+              <Button variant="gold" size="sm" onClick={handleSave} disabled={isSaving} isLoading={isSaving}>
                 Simpan & Perbarui Undangan
               </Button>
             </div>
@@ -465,7 +478,7 @@ function EditExistingInvitationContent() {
               <Button variant="outline" size="sm" onClick={() => setStep('info')}>
                 Kembali ke Info Acara
               </Button>
-              <Button variant="gold" size="sm" onClick={handleSave}>
+              <Button variant="gold" size="sm" onClick={handleSave} disabled={isSaving} isLoading={isSaving}>
                 Simpan & Perbarui Undangan
               </Button>
             </div>

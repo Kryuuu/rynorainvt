@@ -20,12 +20,15 @@ import { Badge } from '@/components/ui/badge';
 import { INITIAL_PLANS } from '@/lib/billing/plans';
 import { formatIDR } from '@/lib/utils';
 import { paymentGateway } from '@/lib/billing/payment-gateway';
+import { useToast } from '@/components/ui/toast';
+import { errorMessage } from '@/lib/feedback';
 
 export default function SubscriptionBillingPage() {
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly');
   const [currentPlanSlug, setCurrentPlanSlug] = useState<'free' | 'personal-plus' | 'creator-pro' | 'vendor-studio'>('personal-plus');
   const [isProcessingCheckout, setIsProcessingCheckout] = useState(false);
   const [checkoutSuccessMsg, setCheckoutSuccessMsg] = useState<string | null>(null);
+  const toast = useToast();
 
   const plansForCycle = INITIAL_PLANS.filter(p => p.billing_period === billingCycle || p.slug === 'free');
 
@@ -45,23 +48,31 @@ export default function SubscriptionBillingPage() {
 
       // 2. Simulate Midtrans/Xendit Settlement
       setTimeout(async () => {
-        await paymentGateway.processPaymentNotification({
-          order_id: session.orderId,
-          transaction_status: 'settlement',
-          gross_amount: String(session.amount),
-        });
+        try {
+          await paymentGateway.processPaymentNotification({
+            order_id: session.orderId,
+            transaction_status: 'settlement',
+            gross_amount: String(session.amount),
+          });
 
-        const selectedPlan = INITIAL_PLANS.find(p => p.id === planId);
-        if (selectedPlan) {
-          setCurrentPlanSlug(selectedPlan.slug);
+          const selectedPlan = INITIAL_PLANS.find(p => p.id === planId);
+          if (selectedPlan) {
+            setCurrentPlanSlug(selectedPlan.slug);
+          }
+
+          setIsProcessingCheckout(false);
+          setCheckoutSuccessMsg(`Pembayaran berhasil diverifikasi melalui Gateway Sandbox! Paket telah ditingkatkan.`);
+          toast.success('Pembayaran berhasil!', 'Paket Anda telah ditingkatkan. Fitur paket baru langsung aktif.');
+        } catch (err: unknown) {
+          // Sebelumnya error di dalam setTimeout ini tidak tertangkap
+          // (di luar try/catch) sehingga tombol macet di status memproses.
+          setIsProcessingCheckout(false);
+          toast.error('Gagal memproses pembayaran', errorMessage(err, 'Gagal memproses pembayaran') + ' — tidak ada biaya yang dibebankan, silakan coba lagi.');
         }
-
-        setIsProcessingCheckout(false);
-        setCheckoutSuccessMsg(`Pembayaran berhasil diverifikasi melalui Gateway Sandbox! Paket telah ditingkatkan.`);
       }, 1000);
     } catch (err: unknown) {
       setIsProcessingCheckout(false);
-      alert(err instanceof Error ? err.message : 'Gagal memulai checkout');
+      toast.error('Gagal memulai checkout', errorMessage(err, 'Gagal memulai checkout') + ' — silakan coba lagi.');
     }
   };
 

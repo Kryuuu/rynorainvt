@@ -26,6 +26,8 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { dataStore } from '@/lib/data-store';
+import { useToast } from '@/components/ui/toast';
+import { errorMessage } from '@/lib/feedback';
 import { VendorClient } from '@/types';
 import { formatDateWITA } from '@/lib/utils';
 import { useAuth } from '@/lib/auth-context';
@@ -92,6 +94,7 @@ export default function VendorPortalPage() {
   const [brandPhone, setBrandPhone] = useState(vendorWorkspace.settings.contact_phone || '081233445566');
   const [brandColor, setBrandColor] = useState(vendorWorkspace.settings.brand_color || '#C5A880');
   const [brandingSaved, setBrandingSaved] = useState(false);
+  const toast = useToast();
 
   // Vendor Projects
   const vendorProjects = dataStore.invitations.filter(i => i.workspace_id === 'ws_vendor_01');
@@ -112,7 +115,14 @@ export default function VendorPortalPage() {
       updated_at: new Date().toISOString(),
     };
 
-    setClients([...clients, newC]);
+    try {
+      dataStore.addVendorClient(newC);
+      setClients([...clients, newC]);
+      toast.success('Klien baru berhasil ditambahkan!', `${newC.name} tersimpan dan tetap ada setelah halaman di-refresh.`);
+    } catch (err) {
+      toast.error('Gagal menambahkan klien', errorMessage(err, 'Gagal menambahkan klien') + ' — data Anda masih ada di layar ini, silakan coba lagi.');
+      return;
+    }
     setClientModalOpen(false);
     setNewClientName('');
     setNewClientPhone('');
@@ -122,11 +132,24 @@ export default function VendorPortalPage() {
 
   const handleSaveBranding = (e: React.FormEvent) => {
     e.preventDefault();
-    vendorWorkspace.settings.brand_name = brandName;
-    vendorWorkspace.settings.contact_phone = brandPhone;
-    vendorWorkspace.settings.brand_color = brandColor;
-    setBrandingSaved(true);
-    setTimeout(() => setBrandingSaved(false), 2000);
+    try {
+      // Sebelumnya branding hanya diubah di objek memori dan tidak pernah
+      // dipersist — hilang saat refresh. Sekarang disimpan via dataStore.
+      dataStore.saveWorkspace({
+        ...vendorWorkspace,
+        settings: {
+          ...vendorWorkspace.settings,
+          brand_name: brandName,
+          contact_phone: brandPhone,
+          brand_color: brandColor,
+        },
+      });
+      setBrandingSaved(true);
+      setTimeout(() => setBrandingSaved(false), 2000);
+      toast.success('Branding studio berhasil disimpan!', 'Nama, nomor kontak, dan warna aksen brand Anda tersimpan.');
+    } catch (err) {
+      toast.error('Gagal menyimpan branding', errorMessage(err, 'Gagal menyimpan branding') + ' — data Anda masih ada di layar ini, silakan coba lagi.');
+    }
   };
 
   return (

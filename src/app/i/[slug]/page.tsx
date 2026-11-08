@@ -37,6 +37,8 @@ import { formatDateWITA, formatTimeWITA } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
+import { useToast } from '@/components/ui/toast';
+import { errorMessage, copyText } from '@/lib/feedback';
 
 function PublicInvitationContent() {
   const params = useParams();
@@ -62,6 +64,7 @@ function PublicInvitationContent() {
   const [rsvpPax, setRsvpPax] = useState(1);
   const [rsvpMessage, setRsvpMessage] = useState('');
   const [rsvpSubmitted, setRsvpSubmitted] = useState(false);
+  const toast = useToast();
   const [isSubmittingRsvp, setIsSubmittingRsvp] = useState(false);
 
   // Wishes List
@@ -181,10 +184,14 @@ function PublicInvitationContent() {
     }
   };
 
-  const handleCopyAccount = (id: string, text: string) => {
-    navigator.clipboard.writeText(text);
-    setCopiedBankId(id);
-    setTimeout(() => setCopiedBankId(null), 2500);
+  const handleCopyAccount = async (id: string, text: string) => {
+    if (await copyText(text)) {
+      setCopiedBankId(id);
+      setTimeout(() => setCopiedBankId(null), 2500);
+      toast.success('Nomor rekening berhasil disalin!', 'Tempel di aplikasi bank / e-wallet Anda.');
+    } else {
+      toast.error('Gagal menyalin nomor rekening', 'Browser tidak mengizinkan akses clipboard. Salin nomor secara manual.');
+    }
   };
 
   const handleRsvpSubmit = (e: React.FormEvent) => {
@@ -193,22 +200,28 @@ function PublicInvitationContent() {
 
     setIsSubmittingRsvp(true);
     setTimeout(() => {
-      // Record RSVP
-      dataStore.submitRsvp(invitation.id, {
-        guest_name: rsvpName,
-        attendance_status: rsvpStatus,
-        attendee_count: rsvpPax,
-        message: rsvpMessage,
-      });
+      try {
+        // Record RSVP
+        dataStore.submitRsvp(invitation.id, {
+          guest_name: rsvpName,
+          attendance_status: rsvpStatus,
+          attendee_count: rsvpPax,
+          message: rsvpMessage,
+        });
 
-      // Also record to Wishes if message exists
-      if (rsvpMessage.trim()) {
-        const newWish = dataStore.submitWish(invitation.id, rsvpName, rsvpMessage);
-        setWishes([newWish, ...wishes]);
+        // Also record to Wishes if message exists
+        if (rsvpMessage.trim()) {
+          const newWish = dataStore.submitWish(invitation.id, rsvpName, rsvpMessage);
+          setWishes([newWish, ...wishes]);
+        }
+
+        setIsSubmittingRsvp(false);
+        setRsvpSubmitted(true);
+        toast.success('Konfirmasi kehadiran berhasil dikirim!', 'Terima kasih — jawaban Anda tersimpan.');
+      } catch (err) {
+        setIsSubmittingRsvp(false);
+        toast.error('Gagal mengirim RSVP', errorMessage(err, 'Gagal mengirim RSVP') + ' — jawaban Anda masih ada di formulir, silakan coba lagi.');
       }
-
-      setIsSubmittingRsvp(false);
-      setRsvpSubmitted(true);
     }, 600);
   };
 
