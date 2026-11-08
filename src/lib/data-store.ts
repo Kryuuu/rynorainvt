@@ -15,6 +15,7 @@ import {
 import { INITIAL_PLANS, DEFAULT_FREE_ENTITLEMENTS, DEFAULT_VENDOR_STUDIO_ENTITLEMENTS } from './billing/plans';
 import { checkGuestCreationLimit } from './billing/entitlements';
 import { generateSecureToken } from './utils';
+import { errorMessage } from './feedback';
 
 const STATIC_TIMESTAMP = '2026-10-25T00:00:00.000Z';
 
@@ -934,6 +935,99 @@ class MemoryStore {
   auditLogs = [...INITIAL_AUDIT_LOGS];
   transactions = [...INITIAL_TRANSACTIONS];
 
+  // ---- Persistensi lokal -------------------------------------------------
+  // Sebelum PR ini seluruh store hanya hidup di memori: setiap perubahan
+  // (simpan undangan, tambah tamu, check-in, RSVP, dsb.) hilang begitu
+  // halaman di-refresh — inilah akar laporan "kadang ngga kesimpan".
+  // Sekarang setiap mutasi memanggil persist() dan state dipulihkan dari
+  // localStorage saat aplikasi dimuat. Gagal menyimpan (mis. kuota penuh)
+  // melempar Error supaya UI menampilkan pesan gagal yang sebenarnya.
+  private static readonly STORAGE_KEY = 'rynora-invite-store-v1';
+
+  constructor() {
+    this.restore();
+  }
+
+  private snapshot() {
+    return {
+      templates: this.templates,
+      invitations: this.invitations,
+      guests: this.guests,
+      rsvps: this.rsvps,
+      wishes: this.wishes,
+      workspaces: this.workspaces,
+      subscriptions: this.subscriptions,
+      users: this.users,
+      vendorClients: this.vendorClients,
+      publishCredits: this.publishCredits,
+      auditLogs: this.auditLogs,
+      transactions: this.transactions,
+    };
+  }
+
+  /** Simpan seluruh store ke localStorage. Melempar Error bila gagal. */
+  persist() {
+    if (typeof window === 'undefined' || !window.localStorage) return;
+    try {
+      window.localStorage.setItem(MemoryStore.STORAGE_KEY, JSON.stringify(this.snapshot()));
+    } catch (err) {
+      throw new Error('Gagal menyimpan ke penyimpanan lokal: ' + errorMessage(err, 'penyimpanan penuh atau tidak tersedia'));
+    }
+  }
+
+  private restore() {
+    if (typeof window === 'undefined' || !window.localStorage) return;
+    try {
+      const raw = window.localStorage.getItem(MemoryStore.STORAGE_KEY);
+      if (!raw) return;
+      const data = JSON.parse(raw) as Record<string, unknown>;
+      if (!data || typeof data !== 'object' || !Array.isArray(data.invitations)) return;
+      if (Array.isArray(data.templates)) this.templates = data.templates as Template[];
+      if (Array.isArray(data.invitations)) this.invitations = data.invitations as Invitation[];
+      if (Array.isArray(data.guests)) this.guests = data.guests as Guest[];
+      if (Array.isArray(data.rsvps)) this.rsvps = data.rsvps as RsvpResponse[];
+      if (Array.isArray(data.wishes)) this.wishes = data.wishes as GuestWish[];
+      if (data.workspaces && typeof data.workspaces === 'object') this.workspaces = data.workspaces as Record<string, Workspace>;
+      if (data.subscriptions && typeof data.subscriptions === 'object') this.subscriptions = data.subscriptions as Record<string, Subscription>;
+      if (data.users && typeof data.users === 'object') this.users = data.users as Record<string, UserProfile>;
+      if (Array.isArray(data.vendorClients)) this.vendorClients = data.vendorClients as VendorClient[];
+      if (Array.isArray(data.publishCredits)) this.publishCredits = data.publishCredits as PublishCredit[];
+      if (Array.isArray(data.auditLogs)) this.auditLogs = data.auditLogs as AuditLog[];
+      if (Array.isArray(data.transactions)) this.transactions = data.transactions as PaymentTransaction[];
+    } catch {
+      // Data tersimpan rusak -> abaikan dan pakai data seed.
+    }
+  }
+
+  /** Hapus data tersimpan (dipakai test; jangan dipakai di UI produksi). */
+  static clearPersisted() {
+    if (typeof window === 'undefined' || !window.localStorage) return;
+    window.localStorage.removeItem(MemoryStore.STORAGE_KEY);
+  }
+
+  /** Perbarui template (dipakai toggle status/premium di Admin). */
+  updateTemplate(templateId: string, patch: Partial<Template>) {
+    const idx = this.templates.findIndex((t) => t.id === templateId);
+    if (idx < 0) throw new Error('Template tidak ditemukan');
+    this.templates[idx] = { ...this.templates[idx], ...patch, updated_at: new Date().toISOString() };
+    this.persist();
+    return this.templates[idx];
+  }
+
+  /** Simpan workspace (dipakai simpan branding Vendor Studio). */
+  saveWorkspace(workspace: Workspace) {
+    this.workspaces[workspace.id] = { ...workspace, updated_at: new Date().toISOString() };
+    this.persist();
+    return this.workspaces[workspace.id];
+  }
+
+  /** Tambah klien vendor (dipakai modal Tambah Klien di Vendor Studio). */
+  addVendorClient(client: VendorClient) {
+    this.vendorClients.push(client);
+    this.persist();
+    return client;
+  }
+
   // Invitations
   getInvitationBySlug(slug: string) {
     return this.invitations.find(i => i.slug === slug);
@@ -966,6 +1060,7 @@ class MemoryStore {
         updated_at: now,
       });
     }
+    this.persist();
     return invitation;
   }
 
@@ -1006,6 +1101,7 @@ class MemoryStore {
     };
 
     this.guests.push(newGuest);
+    this.persist();
     return newGuest;
   }
 
@@ -1042,6 +1138,7 @@ class MemoryStore {
       this.guests.push(g);
       added.push(g);
     }
+    this.persist();
     return added;
   }
 
@@ -1058,6 +1155,7 @@ class MemoryStore {
       created_at: new Date().toISOString(),
     };
     this.rsvps.push(newRsvp);
+    this.persist();
     return newRsvp;
   }
 
@@ -1072,6 +1170,7 @@ class MemoryStore {
       created_at: new Date().toISOString(),
     };
     this.wishes.unshift(newWish);
+    this.persist();
     return newWish;
   }
 
@@ -1112,6 +1211,7 @@ class MemoryStore {
     }
     guest.checked_in_at = new Date().toISOString();
     guest.checked_in_by = operatorUserId || 'operator_reception';
+    this.persist();
     return { success: true, guest };
   }
 
@@ -1130,6 +1230,7 @@ class MemoryStore {
     }
     guest.checked_in_at = new Date().toISOString();
     guest.checked_in_by = operatorUserId || 'operator_reception';
+    this.persist();
     return { success: true, guest };
   }
 
@@ -1140,6 +1241,7 @@ class MemoryStore {
     }
     guest.checked_in_at = null;
     guest.checked_in_by = null;
+    this.persist();
     return { success: true, guest };
   }
 
@@ -1214,6 +1316,7 @@ class MemoryStore {
       updated_at: now,
     };
 
+    this.persist();
     return newUser;
   }
 
@@ -1315,6 +1418,7 @@ class MemoryStore {
     };
     this.auditLogs.unshift(auditEntry);
 
+    this.persist();
     return {
       success: true,
       user,
@@ -1384,6 +1488,7 @@ class MemoryStore {
       }
     }
 
+    this.persist();
     return { success: true, transaction: txn, auditLog: auditEntry };
   }
 }

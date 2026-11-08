@@ -38,6 +38,8 @@ import { Input, Textarea } from '@/components/ui/input';
 import { dataStore, INITIAL_TEMPLATES } from '@/lib/data-store';
 import { INITIAL_PLANS } from '@/lib/billing/plans';
 import { formatIDR, formatDateWITA } from '@/lib/utils';
+import { useToast } from '@/components/ui/toast';
+import { errorMessage } from '@/lib/feedback';
 import { Plan, PaymentTransaction, PaymentStatus, SubscriptionStatus } from '@/types';
 import { useAuth } from '@/lib/auth-context';
 
@@ -62,6 +64,7 @@ export default function AdminPortalPage() {
 
   // Notifications
   const [notification, setNotification] = useState<{ message: string; type: 'success' | 'info' | 'error' } | null>(null);
+  const toast = useToast();
 
   // User Management State
   const [userSearch, setUserSearch] = useState('');
@@ -135,27 +138,31 @@ export default function AdminPortalPage() {
 
   // Handlers for Template Management
   const handleToggleTemplateStatus = (templateId: string) => {
-    setTemplates(templates.map(t => {
-      if (t.id === templateId) {
-        return {
-          ...t,
-          status: t.status === 'published' ? 'draft' : 'published',
-        };
-      }
-      return t;
-    }));
+    // Sebelumnya toggle ini hanya mengubah state lokal dan tidak memberi
+    // umpan balik apa pun — hilang saat refresh. Sekarang disimpan via
+    // dataStore (terpersist ke localStorage) dan diberi toast.
+    const tpl = templates.find((t) => t.id === templateId);
+    if (!tpl) return;
+    const nextStatus = tpl.status === 'published' ? 'draft' : 'published';
+    try {
+      const updated = dataStore.updateTemplate(templateId, { status: nextStatus });
+      setTemplates(templates.map((t) => (t.id === templateId ? updated : t)));
+      toast.success('Status template diperbarui!', `Template "${tpl.name}" sekarang ${nextStatus === 'published' ? 'diterbitkan' : 'berstatus draft'}.`);
+    } catch (err) {
+      toast.error('Gagal mengubah status template', errorMessage(err, 'Gagal mengubah status template'));
+    }
   };
 
   const handleToggleTemplatePremium = (templateId: string) => {
-    setTemplates(templates.map(t => {
-      if (t.id === templateId) {
-        return {
-          ...t,
-          is_premium: !t.is_premium,
-        };
-      }
-      return t;
-    }));
+    const tpl = templates.find((t) => t.id === templateId);
+    if (!tpl) return;
+    try {
+      const updated = dataStore.updateTemplate(templateId, { is_premium: !tpl.is_premium });
+      setTemplates(templates.map((t) => (t.id === templateId ? updated : t)));
+      toast.success('Label premium diperbarui!', `Template "${tpl.name}" sekarang ${updated.is_premium ? 'Premium' : 'Gratis'}.`);
+    } catch (err) {
+      toast.error('Gagal mengubah label premium', errorMessage(err, 'Gagal mengubah label premium'));
+    }
   };
 
   // Open User Subscription Override Modal
